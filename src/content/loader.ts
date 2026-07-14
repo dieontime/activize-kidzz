@@ -27,12 +27,22 @@ export function createContentLoader(deps: ContentLoaderDeps): ContentLoader {
       if (!("ok" in res) || !res.ok) throw new Error(`bad status for ${path}`);
       const value = parse(await res.json());
       memory.set(cacheKey, value);
-      deps.storage?.setItem(cacheKey, JSON.stringify(value));
+      try {
+        deps.storage?.setItem(cacheKey, JSON.stringify(value));
+      } catch {
+        /* persistence is best-effort */
+      }
       return value;
     } catch (err) {
       if (memory.has(cacheKey)) return memory.get(cacheKey) as T;
       const stored = deps.storage?.getItem(cacheKey);
-      if (stored) return parse(JSON.parse(stored));
+      if (stored) {
+        try {
+          return parse(JSON.parse(stored));
+        } catch {
+          /* corrupted cache — fall through */
+        }
+      }
       throw err;
     }
   }

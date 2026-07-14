@@ -19,6 +19,15 @@ function failFetch(): typeof fetch {
   }) as unknown as typeof fetch;
 }
 
+function flakyFetch(body: unknown): typeof fetch {
+  let calls = 0;
+  return (async () => {
+    calls += 1;
+    if (calls > 1) throw new Error("network down");
+    return { ok: true, json: async () => body };
+  }) as unknown as typeof fetch;
+}
+
 describe("content loader", () => {
   it("fetches and parses the manifest", async () => {
     const loader = createContentLoader({ baseUrl: "/content", fetchFn: okFetch(manifestJson) });
@@ -37,5 +46,19 @@ describe("content loader", () => {
   it("throws when the network fails and there is no cached copy", async () => {
     const offline = createContentLoader({ baseUrl: "/content", fetchFn: failFetch(), storage: fakeStorage() });
     await expect(offline.loadManifest()).rejects.toThrow();
+  });
+
+  it("serves last-good from in-memory cache when the network fails and there is no storage", async () => {
+    const loader = createContentLoader({ baseUrl: "/content", fetchFn: flakyFetch(manifestJson) });
+    expect((await loader.loadManifest()).worldIds).toEqual(["world-jungle"]); // primes memory cache
+    expect((await loader.loadManifest()).worldIds).toEqual(["world-jungle"]); // served from memory
+  });
+
+  it("rejects when the network fails and the stored cache entry is corrupted", async () => {
+    const storage = fakeStorage();
+    storage.setItem("activize:content:manifest.json", "not-json{");
+
+    const offline = createContentLoader({ baseUrl: "/content", fetchFn: failFetch(), storage });
+    await expect(offline.loadManifest()).rejects.toThrow("network down");
   });
 });
