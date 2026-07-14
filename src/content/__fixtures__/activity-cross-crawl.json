@@ -1,0 +1,11 @@
+{
+  "id": "activity-cross-crawl",
+  "type": "movement",
+  "title": "Cross Crawl",
+  "ageBands": ["6-8"],
+  "renderer": "react",
+  "asset": "cross-crawl",
+  "narration": "cross-crawl.mp3",
+  "pacing": { "reps": 6, "tempoMs": 1200 },
+  "instructions": "Touch your right hand to your left knee, then switch!"
+}
