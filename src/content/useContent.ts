@@ -9,13 +9,16 @@ export interface ContentState {
   world: World | null;
   missions: Mission[];
   activitiesByMission: Record<string, Activity[]>;
+  retry: () => void;
 }
 
 export function useContent(): ContentState {
-  const [state, setState] = useState<ContentState>({ status: "loading", world: null, missions: [], activitiesByMission: {} });
+  const [state, setState] = useState<Omit<ContentState, "retry">>({ status: "loading", world: null, missions: [], activitiesByMission: {} });
+  const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
+    setState((s) => ({ ...s, status: "loading" }));
     const loader = createContentLoader({ baseUrl, storage: window.localStorage });
     (async () => {
       try {
@@ -34,7 +37,7 @@ export function useContent(): ContentState {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [attempt]);
 
-  return state;
+  return { ...state, retry: () => setAttempt((a) => a + 1) };
 }

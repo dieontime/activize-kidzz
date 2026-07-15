@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FocusableButton } from "@/components/FocusableButton";
 import { useUiStore } from "@/store/uiStore";
 import type { Activity, Mission } from "@/content/types";
@@ -13,10 +13,16 @@ export function MissionPlayer({ mission, activities }: Props) {
   const [index, setIndex] = useState(0);
   const activity = activities[index];
 
+  useEffect(() => {
+    if (activities.length === 0) goToReward();
+  }, [activities, goToReward]);
+
   const onDone = () => {
     if (index + 1 >= activities.length) goToReward();
     else setIndex((i) => i + 1);
   };
+
+  if (!activity) return null;
 
   return (
     <section aria-label={mission.title}>

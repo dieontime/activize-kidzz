@@ -40,6 +40,11 @@ describe("MissionPlayer", () => {
     expect(useUiStore.getState().screen).toBe("reward");
   });
 
+  it("goes straight to the reward screen when the mission has no activities", async () => {
+    render(<MissionPlayer mission={mission} activities={[]} />);
+    await waitFor(() => expect(useUiStore.getState().screen).toBe("reward"));
+  });
+
   it("keeps D-pad focus on the Done button across activity transitions", async () => {
     const user = userEvent.setup();
     render(<MissionPlayer mission={mission} activities={activities} />);

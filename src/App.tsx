@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { initNavigation } from "@/navigation/initNavigation";
 import { useContent } from "@/content/useContent";
 import { useUiStore } from "@/store/uiStore";
+import { FocusableButton } from "@/components/FocusableButton";
 import { JourneyMap } from "@/screens/JourneyMap";
 import { MissionPlayer } from "@/screens/MissionPlayer";
 import { RewardScreen } from "@/screens/RewardScreen";
@@ -17,6 +18,9 @@ export default function App() {
     return (
       <div>
         <p>Let's try again</p>
+        <FocusableButton autoFocus onPress={content.retry}>
+          Retry
+        </FocusableButton>
       </div>
     );
   }
