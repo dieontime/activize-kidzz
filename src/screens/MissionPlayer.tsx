@@ -25,7 +25,7 @@ export function MissionPlayer({ mission, activities }: Props) {
       </p>
       <h2>{activity.title}</h2>
       {activity.type === "movement" && <p>{activity.instructions}</p>}
-      <FocusableButton autoFocus focusKey={`done-${activity.id}`} onPress={onDone}>
+      <FocusableButton key={activity.id} autoFocus focusKey={`done-${activity.id}`} onPress={onDone}>
         Done
       </FocusableButton>
     </section>

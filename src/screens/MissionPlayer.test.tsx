@@ -1,5 +1,6 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { initNavigation } from "@/navigation/initNavigation";
 import { MissionPlayer } from "./MissionPlayer";
 import { useUiStore } from "@/store/uiStore";
 import type { Activity, Mission } from "@/content/types";
@@ -11,6 +12,10 @@ const activities: Activity[] = [
 ];
 
 describe("MissionPlayer", () => {
+  beforeAll(() => {
+    initNavigation();
+  });
+
   beforeEach(() => useUiStore.getState().startMission("mission-001"));
 
   it("shows the first activity and progress", () => {
@@ -33,5 +38,26 @@ describe("MissionPlayer", () => {
     await user.click(screen.getByRole("button", { name: /done/i }));
     await user.click(screen.getByRole("button", { name: /done/i }));
     expect(useUiStore.getState().screen).toBe("reward");
+  });
+
+  it("keeps D-pad focus on the Done button across activity transitions", async () => {
+    const user = userEvent.setup();
+    render(<MissionPlayer mission={mission} activities={activities} />);
+
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /done/i })).toHaveAttribute(
+        "data-focused",
+        "true",
+      ),
+    );
+
+    await user.click(screen.getByRole("button", { name: /done/i }));
+
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /done/i })).toHaveAttribute(
+        "data-focused",
+        "true",
+      ),
+    );
   });
 });
