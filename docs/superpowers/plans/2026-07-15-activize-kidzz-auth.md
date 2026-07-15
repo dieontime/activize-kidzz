@@ -481,7 +481,7 @@ describe("mockBackend", () => {
 
   it("signup rejects a profane username", async () => {
     await expect(
-      mockBackend.signup({ username: "shithead", pin: ["🐱", "⚡", "🍕", "🌈"], avatar: "avatar_cat", age_band: "6-8" }),
+      mockBackend.signup({ username: "ShitHead", pin: ["🐱", "⚡", "🍕", "🌈"], avatar: "avatar_cat", age_band: "6-8" }),
     ).rejects.toMatchObject({ code: "PROFANITY" });
   });
 
