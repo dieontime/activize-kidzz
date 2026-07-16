@@ -5,6 +5,7 @@ import { containsProfanity } from "@/lib/profanity";
 import { suggestUsernames } from "@/lib/usernameSuggestor";
 import { signup, checkUsernameAvailable } from "@/lib/auth";
 import { FocusableButton } from "@/components/FocusableButton";
+import { PageShell } from "@/components/PageShell";
 import { useAuthStore } from "@/store/authStore";
 
 type Step = "username" | "pin" | "avatar" | "band" | "recovery";
@@ -58,60 +59,80 @@ export function SignupWizard() {
 
   if (step === "recovery" && recoveryCode) {
     return (
-      <div>
-        <h2>Save this code!</h2>
-        <p>Show it to a parent. If you forget your PIN, this gets you back in.</p>
-        <div>{recoveryCode}</div>
-        <FocusableButton autoFocus onPress={completeAuthFlow}>OK, got it</FocusableButton>
-      </div>
+      <PageShell>
+        <h2 className="text-2xl font-bold mb-2">Save this code!</h2>
+        <p className="text-lg mb-4">Show it to a parent. If you forget your PIN, this gets you back in.</p>
+        <div className="text-2xl font-bold bg-storybook-lavender text-storybook-lavenderText rounded-2xl p-4 mb-6 inline-block">
+          {recoveryCode}
+        </div>
+        <div>
+          <FocusableButton variant="pill" className="bg-storybook-peach text-storybook-peachText" autoFocus onPress={completeAuthFlow}>
+            OK, got it
+          </FocusableButton>
+        </div>
+      </PageShell>
     );
   }
 
   return (
-    <div>
+    <PageShell>
       {step === "username" && (
         <>
-          <h2>Pick a silly name!</h2>
+          <h2 className="text-2xl font-bold mb-4">Pick a silly name!</h2>
           <input
+            className="rounded-full px-5 py-3 mb-4 border-2 border-storybook-lavender bg-white text-storybook-ink"
             placeholder="Your silly name"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
-          {usernameError && <p>{usernameError}</p>}
+          {usernameError && <p className="text-lg text-red-700 mb-4">{usernameError}</p>}
           {suggestions.length > 0 && (
-            <div>
+            <div className="flex gap-3 mb-4">
               {suggestions.map((s) => (
-                <FocusableButton key={s} onPress={() => { setUsername(s); setSuggestions([]); setUsernameError(null); }}>
+                <FocusableButton
+                  key={s}
+                  variant="pill"
+                  className="bg-storybook-mint text-storybook-mintText"
+                  onPress={() => { setUsername(s); setSuggestions([]); setUsernameError(null); }}
+                >
                   {s}
                 </FocusableButton>
               ))}
             </div>
           )}
-          <FocusableButton autoFocus onPress={goUsername}>Next</FocusableButton>
+          <FocusableButton variant="pill" className="bg-storybook-peach text-storybook-peachText" autoFocus onPress={goUsername}>
+            Next
+          </FocusableButton>
         </>
       )}
       {step === "pin" && (
         <>
-          <h2>Pick 4 icons for your PIN</h2>
+          <h2 className="text-2xl font-bold mb-4">Pick 4 icons for your PIN</h2>
           <EmojiPinKeypad onComplete={goPinDone} />
         </>
       )}
       {step === "avatar" && (
         <>
-          <h2>Pick your face!</h2>
+          <h2 className="text-2xl font-bold mb-4">Pick your face!</h2>
           <AvatarPicker onPick={setAvatar} selected={avatar ?? undefined} />
-          <FocusableButton focusKey="avatar-next" onPress={goAvatar}>Next</FocusableButton>
+          <FocusableButton variant="pill" className="bg-storybook-peach text-storybook-peachText mt-4" focusKey="avatar-next" onPress={goAvatar}>
+            Next
+          </FocusableButton>
         </>
       )}
       {step === "band" && (
         <>
-          <h2>How old are you?</h2>
-          <div>
-            <FocusableButton autoFocus onPress={() => goBand("3-5")}>3-5</FocusableButton>
-            <FocusableButton onPress={() => goBand("6-8")}>6-8</FocusableButton>
+          <h2 className="text-2xl font-bold mb-4">How old are you?</h2>
+          <div className="flex gap-3">
+            <FocusableButton variant="pill" className="bg-storybook-mint text-storybook-mintText" autoFocus onPress={() => goBand("3-5")}>
+              3-5
+            </FocusableButton>
+            <FocusableButton variant="pill" className="bg-storybook-lavender text-storybook-lavenderText" onPress={() => goBand("6-8")}>
+              6-8
+            </FocusableButton>
           </div>
         </>
       )}
-    </div>
+    </PageShell>
   );
 }
