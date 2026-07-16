@@ -1767,7 +1767,12 @@ beforeAll(() => initNavigation());
 beforeEach(async () => {
   mockBackend.reset();
   useAuthStore.getState().logout();
-  await mockBackend.signup({ username: "SpeedyOtter", pin: ["🐱", "⚡", "🍕", "🌈"], avatar: "avatar_cat", age_band: "6-8" });
+  await mockBackend.signup({
+    username: "SpeedyOtter",
+    pin: [PIN_ICONS[0], PIN_ICONS[1], PIN_ICONS[2], PIN_ICONS[3]],
+    avatar: "avatar_cat",
+    age_band: "6-8",
+  });
 });
 
 describe("LoginScreen", () => {
