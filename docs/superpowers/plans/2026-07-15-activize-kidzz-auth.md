@@ -2099,7 +2099,12 @@ beforeEach(async () => {
   mockBackend.reset();
   useAuthStore.getState().logout();
   useAuthStore.getState().setAuthScreen("profilePicker");
-  await mockBackend.signup({ username: "SpeedyOtter", pin: ["🐱", "⚡", "🍕", "🌈"], avatar: "avatar_cat", age_band: "6-8" });
+  await mockBackend.signup({
+    username: "SpeedyOtter",
+    pin: [PIN_ICONS[0], PIN_ICONS[1], PIN_ICONS[2], PIN_ICONS[3]],
+    avatar: "avatar_cat",
+    age_band: "6-8",
+  });
   addKnownProfile({ profileId: "known-1", username: "SpeedyOtter", avatar: "avatar_cat" });
 });
 
@@ -2284,7 +2289,13 @@ describe("App auth gating", () => {
     const { addKnownProfile } = await import("@/lib/knownProfiles");
     const { mockBackend } = await import("@/services/mockBackend");
     mockBackend.reset();
-    await mockBackend.signup({ username: "SpeedyOtter", pin: ["🐱", "⚡", "🍕", "🌈"], avatar: "avatar_cat", age_band: "6-8" });
+    const { PIN_ICONS } = await import("@/components/EmojiPinKeypad");
+    await mockBackend.signup({
+      username: "SpeedyOtter",
+      pin: [PIN_ICONS[0], PIN_ICONS[1], PIN_ICONS[2], PIN_ICONS[3]],
+      avatar: "avatar_cat",
+      age_band: "6-8",
+    });
     addKnownProfile({ profileId: "known-1", username: "SpeedyOtter", avatar: "avatar_cat" });
     useAuthStore.setState({ authScreen: "profilePicker" });
 
@@ -2295,7 +2306,6 @@ describe("App auth gating", () => {
     await screen.findByText(/who's playing/i);
     await user.click(screen.getByRole("button", { name: avatarEmoji("avatar_cat") }));
 
-    const { PIN_ICONS } = await import("@/components/EmojiPinKeypad");
     await waitFor(() => expect(screen.getByRole("button", { name: PIN_ICONS[0] })).toBeInTheDocument());
     await user.click(screen.getByRole("button", { name: PIN_ICONS[0] }));
     await user.click(screen.getByRole("button", { name: PIN_ICONS[1] }));
