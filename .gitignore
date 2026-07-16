@@ -6,3 +6,4 @@ dist
 supabase/.temp
 .env
 .env.local
+.superpowers/
