@@ -1,0 +1,17 @@
+@import "tailwindcss";
+@import "@fontsource/quicksand/400.css";
+@import "@fontsource/quicksand/700.css";
+
+@theme {
+  --color-storybook-cream: #FDF6EC;
+  --color-storybook-ink: #5B4636;
+  --color-storybook-mint: #BFE3D0;
+  --color-storybook-mintText: #33513F;
+  --color-storybook-peach: #F6CBB7;
+  --color-storybook-peachText: #5B3A2A;
+  --color-storybook-lavender: #D9CFEF;
+  --color-storybook-lavenderText: #40365B;
+  --color-storybook-gold: #E0A458;
+  --color-storybook-tan: #EADFC8;
+  --font-sans: "Quicksand", ui-sans-serif, system-ui, sans-serif;
+}
