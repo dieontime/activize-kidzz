@@ -2270,6 +2270,7 @@ describe("App auth gating", () => {
     await user.click(screen.getByRole("button", { name: PIN_ICONS[1] }));
     await user.click(screen.getByRole("button", { name: PIN_ICONS[2] }));
     await user.click(screen.getByRole("button", { name: PIN_ICONS[3] }));
+    await user.click(screen.getByRole("button", { name: /done/i }));
 
     const { AVATARS, AVATAR_EMOJI } = await import("@/components/AvatarPicker");
     await waitFor(() => expect(screen.getByRole("button", { name: AVATAR_EMOJI[AVATARS[0]] })).toBeInTheDocument());

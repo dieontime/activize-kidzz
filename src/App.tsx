@@ -2,13 +2,29 @@ import { useEffect } from "react";
 import { initNavigation } from "@/navigation/initNavigation";
 import { useContent } from "@/content/useContent";
 import { useUiStore } from "@/store/uiStore";
-import { FocusableButton } from "@/components/FocusableButton";
+import { useAuthStore } from "@/store/authStore";
 import { JourneyMap } from "@/screens/JourneyMap";
 import { MissionPlayer } from "@/screens/MissionPlayer";
 import { RewardScreen } from "@/screens/RewardScreen";
+import { ProfilePicker } from "@/screens/ProfilePicker";
+import { LoginScreen } from "@/screens/LoginScreen";
+import { SignupWizard } from "@/screens/SignupWizard";
+import { RecoveryScreen } from "@/screens/RecoveryScreen";
+import { FocusableButton } from "@/components/FocusableButton";
 
 export default function App() {
   useEffect(() => initNavigation(), []);
+  const authScreen = useAuthStore((s) => s.authScreen);
+
+  if (authScreen === "profilePicker") return <ProfilePicker />;
+  if (authScreen === "login") return <LoginScreen />;
+  if (authScreen === "signup") return <SignupWizard />;
+  if (authScreen === "recovery") return <RecoveryScreen />;
+
+  return <MainApp />;
+}
+
+function MainApp() {
   const content = useContent();
   const screen = useUiStore((s) => s.screen);
   const activeMissionId = useUiStore((s) => s.activeMissionId);

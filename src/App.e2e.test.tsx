@@ -2,6 +2,7 @@ import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import App from "@/App";
 import { useUiStore } from "@/store/uiStore";
+import { useAuthStore } from "@/store/authStore";
 import manifest from "@/content/__fixtures__/manifest.json";
 import world from "@/content/__fixtures__/world-jungle.json";
 import mission from "@/content/__fixtures__/mission-001.json";
@@ -17,6 +18,7 @@ const byPath: Record<string, unknown> = {
 beforeEach(() => {
   useUiStore.getState().goToMap();
   window.localStorage.clear();
+  useAuthStore.setState({ authScreen: null });
   vi.stubGlobal("fetch", vi.fn(async (url: string) => ({ ok: true, json: async () => byPath[url] })));
 });
 
@@ -62,6 +64,77 @@ describe("App end-to-end", () => {
     await waitFor(() => expect(screen.getByText(/let's try again/i)).toBeInTheDocument());
 
     await user.click(screen.getByRole("button", { name: /retry/i }));
+
+    await waitFor(() => expect(screen.getByText(/jungle jump/i)).toBeInTheDocument());
+  });
+});
+
+describe("App auth gating", () => {
+  beforeEach(() => {
+    window.localStorage.clear();
+    useAuthStore.getState().logout();
+    useAuthStore.setState({ authScreen: "login" });
+  });
+
+  it("boots to the Login screen when no profile is known on this TV, and signing up reaches the map", async () => {
+    const user = userEvent.setup();
+    render(<App />);
+
+    expect(await screen.findByText(/welcome back/i)).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: /make a new player/i }));
+
+    await screen.findByText(/pick a silly name/i);
+    await user.type(screen.getByPlaceholderText(/silly name/i), "SpeedyOtter");
+    await user.click(screen.getByRole("button", { name: /^next$/i }));
+
+    const { PIN_ICONS } = await import("@/components/EmojiPinKeypad");
+    await user.click(screen.getByRole("button", { name: PIN_ICONS[0] }));
+    await user.click(screen.getByRole("button", { name: PIN_ICONS[1] }));
+    await user.click(screen.getByRole("button", { name: PIN_ICONS[2] }));
+    await user.click(screen.getByRole("button", { name: PIN_ICONS[3] }));
+    await user.click(screen.getByRole("button", { name: /done/i }));
+
+    const { AVATARS, AVATAR_EMOJI } = await import("@/components/AvatarPicker");
+    await waitFor(() => expect(screen.getByRole("button", { name: AVATAR_EMOJI[AVATARS[0]] })).toBeInTheDocument());
+    await user.click(screen.getByRole("button", { name: AVATAR_EMOJI[AVATARS[0]] }));
+    await user.click(screen.getByRole("button", { name: /^next$/i }));
+
+    await waitFor(() => expect(screen.getByRole("button", { name: "6-8" })).toBeInTheDocument());
+    await user.click(screen.getByRole("button", { name: "6-8" }));
+
+    await screen.findByText(/save this code/i);
+    await user.click(screen.getByRole("button", { name: /ok, got it/i }));
+
+    await waitFor(() => expect(screen.getByText(/jungle jump/i)).toBeInTheDocument());
+  });
+
+  it("shows the Profile Picker on a second boot and logs in with the cached avatar", async () => {
+    const { addKnownProfile } = await import("@/lib/knownProfiles");
+    const { mockBackend } = await import("@/services/mockBackend");
+    mockBackend.reset();
+    const { PIN_ICONS } = await import("@/components/EmojiPinKeypad");
+    await mockBackend.signup({
+      username: "SpeedyOtter",
+      pin: [PIN_ICONS[0], PIN_ICONS[1], PIN_ICONS[2], PIN_ICONS[3]],
+      avatar: "avatar_cat",
+      age_band: "6-8",
+    });
+    addKnownProfile({ profileId: "known-1", username: "SpeedyOtter", avatar: "avatar_cat" });
+    useAuthStore.setState({ authScreen: "profilePicker" });
+
+    const user = userEvent.setup();
+    render(<App />);
+
+    const { avatarEmoji } = await import("@/components/AvatarPicker");
+    await screen.findByText(/who's playing/i);
+    await user.click(screen.getByRole("button", { name: avatarEmoji("avatar_cat") }));
+
+    await waitFor(() => expect(screen.getByRole("button", { name: PIN_ICONS[0] })).toBeInTheDocument());
+    await user.click(screen.getByRole("button", { name: PIN_ICONS[0] }));
+    await user.click(screen.getByRole("button", { name: PIN_ICONS[1] }));
+    await user.click(screen.getByRole("button", { name: PIN_ICONS[2] }));
+    await user.click(screen.getByRole("button", { name: PIN_ICONS[3] }));
+    await user.click(screen.getByRole("button", { name: /done/i }));
 
     await waitFor(() => expect(screen.getByText(/jungle jump/i)).toBeInTheDocument());
   });
