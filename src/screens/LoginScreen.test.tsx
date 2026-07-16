@@ -68,4 +68,11 @@ describe("LoginScreen", () => {
     await user.click(screen.getByRole("button", { name: /forgot pin/i }));
     expect(useAuthStore.getState().authScreen).toBe("recovery");
   });
+
+  it("puts D-pad focus on the Make a new player button by default", async () => {
+    render(<LoginScreen />);
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /make a new player/i })).toHaveAttribute("data-focused", "true"),
+    );
+  });
 });

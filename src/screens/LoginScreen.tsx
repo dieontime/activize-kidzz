@@ -30,7 +30,7 @@ export function LoginScreen() {
       {username.length >= 3 && <EmojiPinKeypad onComplete={onPinDone} />}
       {error && <p>{error}</p>}
       <div>
-        <FocusableButton onPress={() => setAuthScreen("signup")}>Make a new player</FocusableButton>
+        <FocusableButton autoFocus onPress={() => setAuthScreen("signup")}>Make a new player</FocusableButton>
         <FocusableButton onPress={() => setAuthScreen("recovery")}>Forgot PIN?</FocusableButton>
       </div>
     </div>
