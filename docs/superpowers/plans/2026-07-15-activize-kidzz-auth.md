@@ -1551,6 +1551,7 @@ async function fillPinStep(user: ReturnType<typeof userEvent.setup>) {
   await user.click(screen.getByRole("button", { name: PIN_ICONS[1] }));
   await user.click(screen.getByRole("button", { name: PIN_ICONS[2] }));
   await user.click(screen.getByRole("button", { name: PIN_ICONS[3] }));
+  await user.click(screen.getByRole("button", { name: /done/i }));
 }
 
 describe("SignupWizard", () => {
@@ -1589,7 +1590,7 @@ describe("SignupWizard", () => {
   it("shows an error for a profane username", async () => {
     const user = userEvent.setup();
     render(<SignupWizard />);
-    await fillUsernameStep(user, "shithead");
+    await fillUsernameStep(user, "SuperHellBoy");
     expect(await screen.findByText(/try another name/i)).toBeInTheDocument();
   });
 });
