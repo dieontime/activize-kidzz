@@ -4,6 +4,6 @@ let started = false;
 
 export function initNavigation(): void {
   if (started) return;
-  init({ debug: false, visualDebug: false });
+  init({ debug: false, visualDebug: false, useGetBoundingClientRect: true });
   started = true;
 }
