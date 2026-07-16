@@ -26,9 +26,16 @@ interface Props {
 
 export function AvatarPicker({ onPick }: Props) {
   return (
-    <div role="group" aria-label="avatars">
+    <div role="group" aria-label="avatars" className="grid grid-cols-4 gap-3 max-w-xs">
       {AVATARS.map((a, index) => (
-        <FocusableButton key={a} focusKey={`avatar-${a}`} autoFocus={index === 0} onPress={() => onPick(a)}>
+        <FocusableButton
+          key={a}
+          variant="grid"
+          className="bg-storybook-mint text-storybook-mintText"
+          focusKey={`avatar-${a}`}
+          autoFocus={index === 0}
+          onPress={() => onPick(a)}
+        >
           {AVATAR_EMOJI[a]}
         </FocusableButton>
       ))}
