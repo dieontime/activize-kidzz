@@ -153,8 +153,10 @@ export const mockBackend = {
       if (new Date(stored.locked_until) > new Date()) {
         throw new MockBackendError("LOCKED", `Account is locked until ${stored.locked_until}`);
       }
+      // Clear the expired lock but keep failed_attempts so the lockout ladder
+      // (1min -> 5min -> 24h) can actually escalate across repeated windows.
+      // Resetting it here would cap every account at the 1-minute tier forever.
       stored.locked_until = null;
-      stored.failed_attempts = 0;
     }
 
     const attemptHash = await hashPin(pin, stored.salt);
@@ -190,8 +192,8 @@ export const mockBackend = {
       if (new Date(stored.locked_until) > new Date()) {
         throw new MockBackendError("LOCKED", `Account is locked until ${stored.locked_until}`);
       }
+      // Same escalation fix as login(): clear the expired lock, keep the count.
       stored.locked_until = null;
-      stored.failed_attempts = 0;
     }
 
     const attemptHash = await hashRecovery(recoveryCode, stored.salt);
