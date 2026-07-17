@@ -1,11 +1,15 @@
 import { signup, login, recoverPin, checkUsernameAvailable } from "./auth";
 import { useAuthStore } from "@/store/authStore";
+import { useProgressStore } from "@/store/progressStore";
 import { mockBackend } from "@/services/mockBackend";
+import { mockProgressBackend } from "@/services/mockProgressBackend";
 
 describe("auth", () => {
   beforeEach(() => {
     mockBackend.reset();
+    mockProgressBackend.reset();
     useAuthStore.getState().logout();
+    useProgressStore.getState().reset();
   });
 
   it("checkUsernameAvailable passes through to the backend", async () => {
@@ -28,12 +32,32 @@ describe("auth", () => {
     expect(useAuthStore.getState().authScreen).toBe("signup");
   });
 
+  it("signup also loads progress for the new profile", async () => {
+    await signup({ username: "SpeedyOtter", pin: ["🐱", "⚡", "🍕", "🌈"], avatar: "avatar_cat", age_band: "6-8" });
+    expect(useProgressStore.getState().isLoaded).toBe(true);
+    expect(useProgressStore.getState().node).toBe(1);
+  });
+
   it("login logs the profile into useAuthStore", async () => {
     await signup({ username: "SpeedyOtter", pin: ["🐱", "⚡", "🍕", "🌈"], avatar: "avatar_cat", age_band: "6-8" });
     useAuthStore.getState().logout();
     const profile = await login("SpeedyOtter", ["🐱", "⚡", "🍕", "🌈"]);
     expect(profile.username).toBe("SpeedyOtter");
     expect(useAuthStore.getState().activeProfile?.username).toBe("SpeedyOtter");
+  });
+
+  it("login also loads progress for the returning profile", async () => {
+    await signup({ username: "SpeedyOtter", pin: ["🐱", "⚡", "🍕", "🌈"], avatar: "avatar_cat", age_band: "6-8" });
+    useAuthStore.getState().logout();
+    await login("SpeedyOtter", ["🐱", "⚡", "🍕", "🌈"]);
+    expect(useProgressStore.getState().isLoaded).toBe(true);
+  });
+
+  it("logout resets the progress store", async () => {
+    await signup({ username: "SpeedyOtter", pin: ["🐱", "⚡", "🍕", "🌈"], avatar: "avatar_cat", age_band: "6-8" });
+    expect(useProgressStore.getState().isLoaded).toBe(true);
+    useAuthStore.getState().logout();
+    expect(useProgressStore.getState().isLoaded).toBe(false);
   });
 
   it("recoverPin does not touch useAuthStore at all", async () => {

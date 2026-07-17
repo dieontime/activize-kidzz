@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import type { Profile } from "@/services/authTypes";
 import { getKnownProfiles } from "@/lib/knownProfiles";
+import { useProgressStore } from "@/store/progressStore";
 
 export type AuthScreen = "profilePicker" | "login" | "signup" | "recovery" | null;
 
@@ -21,5 +22,8 @@ export const useAuthStore = create<AuthState>((set) => ({
   setAuthScreen: (screen) => set({ authScreen: screen }),
   login: (token, profile) => set({ token, activeProfile: profile }),
   completeAuthFlow: () => set({ authScreen: null }),
-  logout: () => set({ token: null, activeProfile: null, authScreen: "login" }),
+  logout: () => {
+    useProgressStore.getState().reset();
+    set({ token: null, activeProfile: null, authScreen: "login" });
+  },
 }));
