@@ -3,6 +3,8 @@ import userEvent from "@testing-library/user-event";
 import { initNavigation } from "@/navigation/initNavigation";
 import { MissionPlayer } from "./MissionPlayer";
 import { useUiStore } from "@/store/uiStore";
+import { useAuthStore } from "@/store/authStore";
+import { useProgressStore } from "@/store/progressStore";
 import type { Activity, Mission } from "@/content/types";
 
 const mission: Mission = { id: "mission-001", worldId: "world-jungle", node: 1, title: "Day 1", activityIds: ["a1", "a2"] };
@@ -64,5 +66,41 @@ describe("MissionPlayer", () => {
         "true",
       ),
     );
+  });
+});
+
+describe("MissionPlayer progress recording", () => {
+  beforeEach(() => {
+    useAuthStore.setState({
+      activeProfile: { id: "profile-1", username: "SpeedyOtter", avatar: "avatar_cat", age_band: "6-8" },
+    });
+    useProgressStore.getState().setProgress({
+      world: 0, node: 1, streakCount: 0, longestStreak: 0, lastCompletedDate: null,
+    });
+  });
+
+  afterEach(() => {
+    useAuthStore.getState().logout();
+    useProgressStore.getState().reset();
+  });
+
+  it("advances the progress node after completing the mission at the current node", async () => {
+    const user = userEvent.setup();
+    render(<MissionPlayer mission={mission} activities={activities} />);
+    await user.click(screen.getByRole("button", { name: /done/i }));
+    await user.click(screen.getByRole("button", { name: /done/i }));
+    await waitFor(() => expect(useProgressStore.getState().node).toBe(2));
+  });
+
+  it("does not advance the node when replaying an already-completed mission", async () => {
+    useProgressStore.getState().setProgress({
+      world: 0, node: 2, streakCount: 1, longestStreak: 1, lastCompletedDate: "2020-01-01",
+    });
+    const user = userEvent.setup();
+    render(<MissionPlayer mission={mission} activities={activities} />); // mission.node is 1, progress.node is 2
+    await user.click(screen.getByRole("button", { name: /done/i }));
+    await user.click(screen.getByRole("button", { name: /done/i }));
+    await new Promise((resolve) => setTimeout(resolve, 0)); // let the fire-and-forget write settle
+    expect(useProgressStore.getState().node).toBe(2); // unchanged
   });
 });

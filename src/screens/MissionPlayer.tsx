@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { FocusableButton } from "@/components/FocusableButton";
 import { PageShell } from "@/components/PageShell";
 import { useUiStore } from "@/store/uiStore";
+import { recordMissionCompletion } from "@/lib/progress";
 import type { Activity, Mission } from "@/content/types";
 
 interface Props {
@@ -15,12 +16,19 @@ export function MissionPlayer({ mission, activities }: Props) {
   const activity = activities[index];
 
   useEffect(() => {
-    if (activities.length === 0) goToReward();
-  }, [activities, goToReward]);
+    if (activities.length === 0) {
+      void recordMissionCompletion(mission.id, mission.node, 0);
+      goToReward();
+    }
+  }, [activities, goToReward, mission.id, mission.node]);
 
   const onDone = () => {
-    if (index + 1 >= activities.length) goToReward();
-    else setIndex((i) => i + 1);
+    if (index + 1 >= activities.length) {
+      void recordMissionCompletion(mission.id, mission.node, activities.length);
+      goToReward();
+    } else {
+      setIndex((i) => i + 1);
+    }
   };
 
   if (!activity) return null;
