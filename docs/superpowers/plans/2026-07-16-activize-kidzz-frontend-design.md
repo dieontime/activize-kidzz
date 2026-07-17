@@ -30,6 +30,8 @@
 **Interfaces:**
 - Produces: the `storybook` Tailwind color namespace (`storybook-cream`, `storybook-ink`, `storybook-mint`, `storybook-mintText`, `storybook-peach`, `storybook-peachText`, `storybook-lavender`, `storybook-lavenderText`, `storybook-gold`, `storybook-tan`) and `font-sans` = Quicksand, consumed by every later task.
 
+**Implementation note (post-execution):** `npm install tailwindcss` resolved to **v4**, not the v3 this task's steps below assume. v4 does not read a `tailwind.config.cjs`/`@tailwind base|components|utilities` setup without an explicit `@config` directive — the steps below were superseded by a native v4 `@theme` block directly in `src/index.css` (no `tailwind.config.cjs` at all; `@import "tailwindcss";` instead of the three `@tailwind` directives). See the real, final `src/index.css` and the Task 1 commit message for what actually shipped.
+
 - [ ] **Step 1: Install dependencies**
 
 ```bash
