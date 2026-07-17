@@ -4,6 +4,7 @@ import { avatarEmoji } from "@/components/AvatarPicker";
 import { getKnownProfiles } from "@/lib/knownProfiles";
 import { login } from "@/lib/auth";
 import { FocusableButton } from "@/components/FocusableButton";
+import { PageShell } from "@/components/PageShell";
 import { useAuthStore } from "@/store/authStore";
 
 export function ProfilePicker() {
@@ -25,21 +26,23 @@ export function ProfilePicker() {
 
   if (pickedUsername) {
     return (
-      <div>
-        <h1>Hi, {pickedUsername}!</h1>
+      <PageShell>
+        <h1 className="text-3xl font-bold mb-6">Hi, {pickedUsername}!</h1>
         <EmojiPinKeypad onComplete={onPinDone} />
-        {error && <p>{error}</p>}
-      </div>
+        {error && <p className="text-lg text-red-700 mt-4">{error}</p>}
+      </PageShell>
     );
   }
 
   return (
-    <div>
-      <h1>Who's playing?</h1>
-      <div role="group" aria-label="known profiles">
+    <PageShell>
+      <h1 className="text-3xl font-bold mb-6">Who's playing?</h1>
+      <div role="group" aria-label="known profiles" className="grid grid-cols-4 gap-3 max-w-xs mb-6">
         {profiles.map((p, index) => (
           <FocusableButton
             key={p.profileId}
+            variant="grid"
+            className="bg-storybook-mint text-storybook-mintText"
             focusKey={`profile-${p.profileId}`}
             autoFocus={index === 0}
             onPress={() => setPickedUsername(p.username)}
@@ -48,9 +51,14 @@ export function ProfilePicker() {
           </FocusableButton>
         ))}
       </div>
-      <FocusableButton autoFocus={profiles.length === 0} onPress={() => setAuthScreen("login")}>
+      <FocusableButton
+        variant="pill"
+        className="bg-storybook-peach text-storybook-peachText"
+        autoFocus={profiles.length === 0}
+        onPress={() => setAuthScreen("login")}
+      >
         Use a different name
       </FocusableButton>
-    </div>
+    </PageShell>
   );
 }
