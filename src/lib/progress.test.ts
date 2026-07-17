@@ -1,6 +1,7 @@
 import { useAuthStore } from "@/store/authStore";
 import { useProgressStore } from "@/store/progressStore";
 import { mockProgressBackend } from "@/services/mockProgressBackend";
+import { progressBackend } from "@/services/progressBackend";
 import { loadProgress, recordMissionCompletion } from "./progress";
 
 const PROFILE = { id: "profile-1", username: "SpeedyOtter", avatar: "avatar_cat", age_band: "6-8" as const };
@@ -89,6 +90,22 @@ describe("lib/progress", () => {
       useProgressStore.getState().reset();
       await loadProgress(PROFILE.id);
       expect(useProgressStore.getState().node).toBe(2);
+    });
+
+    it("swallows a backend error and leaves the store unchanged (no failure, no losing)", async () => {
+      await loadProgress(PROFILE.id);
+      const before = useProgressStore.getState();
+
+      const saveSpy = vi.spyOn(progressBackend, "saveProgress").mockRejectedValueOnce(new Error("network down"));
+
+      await expect(recordMissionCompletion("mission-001", 1, 4)).resolves.toBeUndefined();
+
+      const after = useProgressStore.getState();
+      expect(after.node).toBe(before.node);
+      expect(after.streakCount).toBe(before.streakCount);
+      expect(after.lastCompletedDate).toBe(before.lastCompletedDate);
+
+      saveSpy.mockRestore();
     });
   });
 });
