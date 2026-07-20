@@ -54,3 +54,7 @@ export interface BreathingActivity extends ActivityBase {
 }
 
 export type Activity = MovementActivity | PuzzleActivity | BreathingActivity;
+
+export interface RendererProps {
+  activity: MovementActivity | BreathingActivity;
+}

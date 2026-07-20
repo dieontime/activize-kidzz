@@ -10,6 +10,7 @@ interface Props {
   autoFocus?: boolean;
   variant?: Variant;
   className?: string;
+  disabled?: boolean;
 }
 
 const FOCUS_RING =
@@ -28,8 +29,12 @@ export function FocusableButton({
   autoFocus,
   variant = "pill",
   className,
+  disabled = false,
 }: Props) {
-  const { ref, focused, focusSelf } = useFocusable({ focusKey, onEnterPress: onPress });
+  const handlePress = () => {
+    if (!disabled) onPress();
+  };
+  const { ref, focused, focusSelf } = useFocusable({ focusKey, onEnterPress: handlePress });
 
   useEffect(() => {
     if (autoFocus) focusSelf();
@@ -39,8 +44,9 @@ export function FocusableButton({
     <button
       ref={ref}
       data-focused={focused}
-      onClick={onPress}
-      className={`border-none cursor-pointer transition-transform duration-150 ${VARIANT_CLASSES[variant]} ${className ?? ""}`}
+      disabled={disabled}
+      onClick={handlePress}
+      className={`border-none cursor-pointer transition-transform duration-150 ${VARIANT_CLASSES[variant]} ${disabled ? "opacity-50 cursor-not-allowed" : ""} ${className ?? ""}`}
     >
       {children}
     </button>

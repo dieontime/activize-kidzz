@@ -55,4 +55,57 @@ describe("FocusableButton", () => {
 
     expect(onPress).toHaveBeenCalledTimes(1);
   });
+
+  it("does not call onPress when Enter is pressed while disabled", async () => {
+    const onPress = vi.fn();
+    render(
+      <FocusableButton autoFocus disabled onPress={onPress}>
+        Locked
+      </FocusableButton>,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /locked/i })).toHaveAttribute("data-focused", "true"),
+    );
+
+    fireEvent.keyDown(window, { keyCode: 13, code: "Enter", key: "Enter" });
+
+    expect(onPress).not.toHaveBeenCalled();
+  });
+
+  it("stays focusable via autoFocus even while disabled", async () => {
+    render(
+      <FocusableButton autoFocus disabled onPress={() => {}}>
+        Locked
+      </FocusableButton>,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /locked/i })).toHaveAttribute("data-focused", "true"),
+    );
+    expect(screen.getByRole("button", { name: /locked/i })).toBeDisabled();
+  });
+
+  it("calls onPress once re-enabled", async () => {
+    const onPress = vi.fn();
+    const { rerender } = render(
+      <FocusableButton autoFocus disabled onPress={onPress}>
+        Locked
+      </FocusableButton>,
+    );
+
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /locked/i })).toHaveAttribute("data-focused", "true"),
+    );
+
+    rerender(
+      <FocusableButton autoFocus disabled={false} onPress={onPress}>
+        Locked
+      </FocusableButton>,
+    );
+
+    fireEvent.keyDown(window, { keyCode: 13, code: "Enter", key: "Enter" });
+
+    expect(onPress).toHaveBeenCalledTimes(1);
+  });
 });
