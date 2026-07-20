@@ -30,6 +30,9 @@ beforeEach(() => {
 afterEach(() => vi.unstubAllGlobals());
 
 describe("App end-to-end", () => {
+  // Real content pacing (activity-cross-crawl.json: 6 reps * 1200ms) means a
+  // real ~7.2s gate before the validate button enables in the two tests
+  // below -- both get an explicit timeout past vitest's 5000ms default.
   it("boots, loads the map, runs the mission, and reaches the reward", async () => {
     const user = userEvent.setup();
     render(<App />);
@@ -42,7 +45,11 @@ describe("App end-to-end", () => {
     await user.click(screen.getByRole("button", { name: /wake up your brain/i }));
     expect(screen.getByText(/cross crawl/i)).toBeInTheDocument();
 
-    await user.click(screen.getByRole("button", { name: /done/i }));
+    await waitFor(
+      () => expect(screen.getByRole("button", { name: /we did it/i })).not.toBeDisabled(),
+      { timeout: 8000 },
+    );
+    await user.click(screen.getByRole("button", { name: /we did it/i }));
     await waitFor(() => expect(screen.getByText(/you did it/i)).toBeInTheDocument());
     await waitFor(() =>
       expect(screen.getByRole("button", { name: /back to map/i })).toHaveAttribute("data-focused", "true"),
@@ -50,7 +57,7 @@ describe("App end-to-end", () => {
 
     await user.click(screen.getByRole("button", { name: /back to map/i }));
     expect(screen.getByText(/jungle jump/i)).toBeInTheDocument();
-  });
+  }, 10000);
 
   it("recovers from a failed load by retrying", async () => {
     const user = userEvent.setup();
@@ -81,7 +88,11 @@ describe("App end-to-end", () => {
       expect(screen.getByRole("button", { name: /wake up your brain/i })).toHaveAttribute("data-focused", "true"),
     );
     await user.click(screen.getByRole("button", { name: /wake up your brain/i }));
-    await user.click(screen.getByRole("button", { name: /done/i }));
+    await waitFor(
+      () => expect(screen.getByRole("button", { name: /we did it/i })).not.toBeDisabled(),
+      { timeout: 8000 },
+    );
+    await user.click(screen.getByRole("button", { name: /we did it/i }));
     await waitFor(() => expect(screen.getByText(/you did it/i)).toBeInTheDocument());
     await user.click(screen.getByRole("button", { name: /back to map/i }));
     await waitFor(() => expect(useProgressStore.getState().node).toBe(2));
@@ -100,7 +111,7 @@ describe("App end-to-end", () => {
 
     render(<App />);
     await waitFor(() => expect(screen.getByText(/jungle jump/i)).toBeInTheDocument());
-  });
+  }, 10000);
 });
 
 describe("App auth gating", () => {
