@@ -8,10 +8,19 @@ import { useProgressStore } from "@/store/progressStore";
 import type { Activity, Mission } from "@/content/types";
 
 const mission: Mission = { id: "mission-001", worldId: "world-jungle", node: 1, title: "Day 1", activityIds: ["a1", "a2"] };
+// Both activities use a 1ms gate (reps * tempoMs) so the validate button
+// enables almost immediately -- breathing's gate duration math has its own
+// dedicated coverage in ExercisePlayer.test.tsx; this file only needs to
+// exercise MissionPlayer's own integration (advancing, focus, progress).
 const activities: Activity[] = [
-  { id: "a1", type: "movement", title: "Cross Crawl", ageBands: ["6-8"], narration: "a1.mp3", renderer: "react", asset: "cross-crawl", pacing: { reps: 6, tempoMs: 1200 }, instructions: "Touch hand to opposite knee." },
-  { id: "a2", type: "breathing", title: "Belly Breaths", ageBands: ["6-8"], narration: "a2.mp3", renderer: "react", asset: "belly", cycles: 4 },
+  { id: "a1", type: "movement", title: "Cross Crawl", ageBands: ["6-8"], narration: "a1.mp3", renderer: "react", asset: "cross-crawl", pacing: { reps: 1, tempoMs: 1 }, instructions: "Touch hand to opposite knee." },
+  { id: "a2", type: "movement", title: "Belly Breaths", ageBands: ["6-8"], narration: "a2.mp3", renderer: "react", asset: "belly", pacing: { reps: 1, tempoMs: 1 }, instructions: "Breathe in, breathe out." },
 ];
+
+async function completeCurrentActivity(user: ReturnType<typeof userEvent.setup>) {
+  await waitFor(() => expect(screen.getByRole("button", { name: /we did it/i })).not.toBeDisabled());
+  await user.click(screen.getByRole("button", { name: /we did it/i }));
+}
 
 describe("MissionPlayer", () => {
   beforeAll(() => {
@@ -26,10 +35,10 @@ describe("MissionPlayer", () => {
     expect(screen.getByText(/activity 1 of 2/i)).toBeInTheDocument();
   });
 
-  it("advances through activities when the parent presses Done", async () => {
+  it("advances through activities when the parent presses We did it!", async () => {
     const user = userEvent.setup();
     render(<MissionPlayer mission={mission} activities={activities} />);
-    await user.click(screen.getByRole("button", { name: /done/i }));
+    await completeCurrentActivity(user);
     expect(screen.getByText(/belly breaths/i)).toBeInTheDocument();
     expect(screen.getByText(/activity 2 of 2/i)).toBeInTheDocument();
   });
@@ -37,8 +46,8 @@ describe("MissionPlayer", () => {
   it("goes to the reward screen after the last activity", async () => {
     const user = userEvent.setup();
     render(<MissionPlayer mission={mission} activities={activities} />);
-    await user.click(screen.getByRole("button", { name: /done/i }));
-    await user.click(screen.getByRole("button", { name: /done/i }));
+    await completeCurrentActivity(user);
+    await completeCurrentActivity(user);
     expect(useUiStore.getState().screen).toBe("reward");
   });
 
@@ -47,25 +56,24 @@ describe("MissionPlayer", () => {
     await waitFor(() => expect(useUiStore.getState().screen).toBe("reward"));
   });
 
-  it("keeps D-pad focus on the Done button across activity transitions", async () => {
+  it("keeps D-pad focus on the validate button across activity transitions", async () => {
     const user = userEvent.setup();
     render(<MissionPlayer mission={mission} activities={activities} />);
 
     await waitFor(() =>
-      expect(screen.getByRole("button", { name: /done/i })).toHaveAttribute(
-        "data-focused",
-        "true",
-      ),
+      expect(screen.getByRole("button", { name: /we did it/i })).toHaveAttribute("data-focused", "true"),
     );
 
-    await user.click(screen.getByRole("button", { name: /done/i }));
+    await completeCurrentActivity(user);
 
     await waitFor(() =>
-      expect(screen.getByRole("button", { name: /done/i })).toHaveAttribute(
-        "data-focused",
-        "true",
-      ),
+      expect(screen.getByRole("button", { name: /we did it/i })).toHaveAttribute("data-focused", "true"),
     );
+  });
+
+  it("does not let the mission be completed before the gate elapses", () => {
+    render(<MissionPlayer mission={mission} activities={activities} />);
+    expect(screen.getByRole("button", { name: /we did it/i })).toBeDisabled();
   });
 });
 
@@ -87,8 +95,8 @@ describe("MissionPlayer progress recording", () => {
   it("advances the progress node after completing the mission at the current node", async () => {
     const user = userEvent.setup();
     render(<MissionPlayer mission={mission} activities={activities} />);
-    await user.click(screen.getByRole("button", { name: /done/i }));
-    await user.click(screen.getByRole("button", { name: /done/i }));
+    await completeCurrentActivity(user);
+    await completeCurrentActivity(user);
     await waitFor(() => expect(useProgressStore.getState().node).toBe(2));
   });
 
@@ -98,8 +106,8 @@ describe("MissionPlayer progress recording", () => {
     });
     const user = userEvent.setup();
     render(<MissionPlayer mission={mission} activities={activities} />); // mission.node is 1, progress.node is 2
-    await user.click(screen.getByRole("button", { name: /done/i }));
-    await user.click(screen.getByRole("button", { name: /done/i }));
+    await completeCurrentActivity(user);
+    await completeCurrentActivity(user);
     await new Promise((resolve) => setTimeout(resolve, 0)); // let the fire-and-forget write settle
     expect(useProgressStore.getState().node).toBe(2); // unchanged
   });

@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { FocusableButton } from "@/components/FocusableButton";
 import { PageShell } from "@/components/PageShell";
+import { FocusableButton } from "@/components/FocusableButton";
+import { ExercisePlayer } from "@/components/ExercisePlayer";
 import { useUiStore } from "@/store/uiStore";
 import { recordMissionCompletion } from "@/lib/progress";
 import type { Activity, Mission } from "@/content/types";
@@ -39,20 +40,21 @@ export function MissionPlayer({ mission, activities }: Props) {
         <p className="text-lg opacity-80 mb-4">
           Activity {index + 1} of {activities.length}
         </p>
-        <div className="bg-storybook-lavender text-storybook-lavenderText rounded-2xl p-6 mb-6">
-          <h2 className="text-2xl font-bold mb-2">{activity.title}</h2>
-          {activity.type === "movement" && <p className="text-lg">{activity.instructions}</p>}
-        </div>
-        <FocusableButton
-          key={activity.id}
-          variant="pill"
-          className="bg-storybook-peach text-storybook-peachText"
-          autoFocus
-          focusKey={`done-${activity.id}`}
-          onPress={onDone}
-        >
-          Done
-        </FocusableButton>
+        <h2 className="text-2xl font-bold mb-2">{activity.title}</h2>
+        {activity.type === "movement" || activity.type === "breathing" ? (
+          <ExercisePlayer key={activity.id} activity={activity} onValidated={onDone} />
+        ) : (
+          <FocusableButton
+            key={activity.id}
+            variant="pill"
+            className="bg-storybook-peach text-storybook-peachText"
+            autoFocus
+            focusKey={`done-${activity.id}`}
+            onPress={onDone}
+          >
+            Done
+          </FocusableButton>
+        )}
       </section>
     </PageShell>
   );
