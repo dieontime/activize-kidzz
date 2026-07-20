@@ -5,8 +5,12 @@ import { todayDateString, yesterdayDateString } from "@/lib/date";
 import type { ProgressRecord } from "@/services/progressTypes";
 
 export async function loadProgress(profileId: string): Promise<void> {
-  const record = await progressBackend.loadProgress(profileId);
+  const [record, earnedBadgeIds] = await Promise.all([
+    progressBackend.loadProgress(profileId),
+    progressBackend.loadEarnedBadges(profileId),
+  ]);
   useProgressStore.getState().setProgress(record);
+  useProgressStore.getState().setEarnedBadgeIds(earnedBadgeIds);
 }
 
 function nextStreakCount(lastCompletedDate: string | null, streakCount: number): number {

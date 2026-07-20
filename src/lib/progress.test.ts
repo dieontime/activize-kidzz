@@ -25,6 +25,12 @@ describe("lib/progress", () => {
       expect(state.node).toBe(1);
       expect(state.isLoaded).toBe(true);
     });
+
+    it("populates earnedBadgeIds from the backend", async () => {
+      await mockProgressBackend.insertEarnedBadge(PROFILE.id, "badge-streak-3");
+      await loadProgress(PROFILE.id);
+      expect(useProgressStore.getState().earnedBadgeIds).toEqual(["badge-streak-3"]);
+    });
   });
 
   describe("recordMissionCompletion", () => {
