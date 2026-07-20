@@ -44,7 +44,15 @@ function MainApp() {
   const activeMission = content.missions.find((m) => m.id === activeMissionId) ?? null;
 
   if (screen === "mission" && activeMission) {
-    return <MissionPlayer mission={activeMission} activities={content.activitiesByMission[activeMission.id] ?? []} />;
+    return (
+      <MissionPlayer
+        mission={activeMission}
+        activities={content.activitiesByMission[activeMission.id] ?? []}
+        badges={content.badges}
+        worldId={content.world.id}
+        totalMissionsInWorld={content.world.missionIds.length}
+      />
+    );
   }
   if (screen === "reward") {
     return <RewardScreen missionTitle={activeMission?.title ?? "Today's mission"} />;

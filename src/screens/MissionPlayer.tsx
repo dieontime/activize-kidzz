@@ -4,28 +4,39 @@ import { FocusableButton } from "@/components/FocusableButton";
 import { ExercisePlayer } from "@/components/ExercisePlayer";
 import { useUiStore } from "@/store/uiStore";
 import { recordMissionCompletion } from "@/lib/progress";
-import type { Activity, Mission } from "@/content/types";
+import { evaluateAndAwardBadges } from "@/lib/badges";
+import type { Activity, Badge, Mission } from "@/content/types";
 
 interface Props {
   mission: Mission;
   activities: Activity[];
+  badges: Badge[];
+  worldId: string;
+  totalMissionsInWorld: number;
 }
 
-export function MissionPlayer({ mission, activities }: Props) {
+export function MissionPlayer({ mission, activities, badges, worldId, totalMissionsInWorld }: Props) {
   const goToReward = useUiStore((s) => s.goToReward);
   const [index, setIndex] = useState(0);
   const activity = activities[index];
 
+  async function completeMission(activitiesDone: number): Promise<void> {
+    await recordMissionCompletion(mission.id, mission.node, activitiesDone);
+    await evaluateAndAwardBadges(badges, { worldId, totalMissionsInWorld });
+  }
+
   useEffect(() => {
     if (activities.length === 0) {
-      void recordMissionCompletion(mission.id, mission.node, 0);
+      void completeMission(0);
       goToReward();
     }
-  }, [activities, goToReward, mission.id, mission.node]);
+    // completeMission closes over mission/badges/worldId/totalMissionsInWorld,
+    // all listed below -- it is intentionally recreated each render, not memoized.
+  }, [activities, goToReward, mission.id, mission.node, badges, worldId, totalMissionsInWorld]);
 
   const onDone = () => {
     if (index + 1 >= activities.length) {
-      void recordMissionCompletion(mission.id, mission.node, activities.length);
+      void completeMission(activities.length);
       goToReward();
     } else {
       setIndex((i) => i + 1);
