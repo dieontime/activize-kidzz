@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { createContentLoader } from "./loader";
+import { useProgressStore } from "@/store/progressStore";
 import type { World, Mission, Activity } from "./types";
 
 const baseUrl = import.meta.env.VITE_CONTENT_URL ?? "/content";
@@ -23,7 +24,9 @@ export function useContent(): ContentState {
     (async () => {
       try {
         const manifest = await loader.loadManifest();
-        const world = await loader.loadWorld(manifest.worldIds[0]);
+        const worldIndex = useProgressStore.getState().world;
+        const worldId = manifest.worldIds[worldIndex] ?? manifest.worldIds[0];
+        const world = await loader.loadWorld(worldId);
         const missions = await Promise.all(world.missionIds.map((id) => loader.loadMission(id)));
         const activitiesByMission: Record<string, Activity[]> = {};
         for (const mission of missions) {
