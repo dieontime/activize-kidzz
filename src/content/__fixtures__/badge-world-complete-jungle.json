@@ -1,0 +1,1 @@
+{ "id": "badge-world-complete-jungle", "name": "Jungle Explorer", "emoji": "🏆", "rule": { "kind": "world_complete", "worldId": "world-jungle" } }

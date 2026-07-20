@@ -2,7 +2,10 @@ import manifestJson from "./__fixtures__/manifest.json";
 import worldJson from "./__fixtures__/world-jungle.json";
 import missionJson from "./__fixtures__/mission-001.json";
 import activityJson from "./__fixtures__/activity-cross-crawl.json";
-import { parseManifest, parseWorld, parseMission, parseActivity } from "./schema";
+import badgeStreak3Json from "./__fixtures__/badge-streak-3.json";
+import badgeWorldCompleteJson from "./__fixtures__/badge-world-complete-jungle.json";
+import badgeMissionsTotalJson from "./__fixtures__/badge-missions-total.json";
+import { parseManifest, parseWorld, parseMission, parseActivity, parseBadge } from "./schema";
 
 describe("content schema", () => {
   it("parses a valid manifest", () => {
@@ -31,5 +34,24 @@ describe("content schema", () => {
 
   it("rejects a manifest missing worldIds", () => {
     expect(() => parseManifest({ version: 1 })).toThrow();
+  });
+
+  it("parses a streak badge", () => {
+    const b = parseBadge(badgeStreak3Json);
+    expect(b.rule).toEqual({ kind: "streak", value: 3 });
+  });
+
+  it("parses a world_complete badge", () => {
+    const b = parseBadge(badgeWorldCompleteJson);
+    expect(b.rule).toEqual({ kind: "world_complete", worldId: "world-jungle" });
+  });
+
+  it("parses a missions_total badge", () => {
+    const b = parseBadge(badgeMissionsTotalJson);
+    expect(b.rule).toEqual({ kind: "missions_total", value: 10 });
+  });
+
+  it("rejects a badge with an unknown rule kind", () => {
+    expect(() => parseBadge({ ...badgeStreak3Json, rule: { kind: "mystery", value: 1 } })).toThrow();
   });
 });

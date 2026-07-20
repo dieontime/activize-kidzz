@@ -1,5 +1,5 @@
 import { z } from "zod";
-import type { Manifest, World, Mission, Activity } from "./types";
+import type { Manifest, World, Mission, Activity, Badge } from "./types";
 
 const ageBand = z.enum(["3-5", "6-8"]);
 const renderer = z.enum(["rive", "lottie", "video", "react"]);
@@ -35,7 +35,21 @@ const activitySchema = z.discriminatedUnion("type", [
   z.object({ ...activityBase, type: z.literal("breathing"), renderer, asset: z.string(), cycles: z.number() }),
 ]);
 
+const badgeRuleSchema = z.discriminatedUnion("kind", [
+  z.object({ kind: z.literal("streak"), value: z.number() }),
+  z.object({ kind: z.literal("world_complete"), worldId: z.string() }),
+  z.object({ kind: z.literal("missions_total"), value: z.number() }),
+]);
+
+const badgeSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  emoji: z.string(),
+  rule: badgeRuleSchema,
+});
+
 export const parseManifest = (json: unknown): Manifest => manifestSchema.parse(json);
 export const parseWorld = (json: unknown): World => worldSchema.parse(json);
 export const parseMission = (json: unknown): Mission => missionSchema.parse(json);
 export const parseActivity = (json: unknown): Activity => activitySchema.parse(json) as Activity;
+export const parseBadge = (json: unknown): Badge => badgeSchema.parse(json) as Badge;

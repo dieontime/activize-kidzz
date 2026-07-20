@@ -58,3 +58,15 @@ export type Activity = MovementActivity | PuzzleActivity | BreathingActivity;
 export interface RendererProps {
   activity: MovementActivity | BreathingActivity;
 }
+
+export type BadgeRule =
+  | { kind: "streak"; value: number }
+  | { kind: "world_complete"; worldId: string }
+  | { kind: "missions_total"; value: number };
+
+export interface Badge {
+  id: string;
+  name: string;
+  emoji: string;
+  rule: BadgeRule;
+}

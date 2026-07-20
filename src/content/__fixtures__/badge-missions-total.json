@@ -1,0 +1,1 @@
+{ "id": "badge-missions-total", "name": "Mission Master", "emoji": "🎖️", "rule": { "kind": "missions_total", "value": 10 } }
