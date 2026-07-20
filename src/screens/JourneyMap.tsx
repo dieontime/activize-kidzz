@@ -13,6 +13,7 @@ interface Props {
 
 export function JourneyMap({ world, missions }: Props) {
   const startMission = useUiStore((s) => s.startMission);
+  const goToTrophyShelf = useUiStore((s) => s.goToTrophyShelf);
   const progressNode = useProgressStore((s) => s.node);
   const lastCompletedDate = useProgressStore((s) => s.lastCompletedDate);
   const today = todayDateString();
@@ -20,7 +21,7 @@ export function JourneyMap({ world, missions }: Props) {
   return (
     <PageShell>
       <h1 className="text-3xl font-bold mb-6">{world.name}</h1>
-      <ul className="grid grid-cols-3 gap-4 list-none p-0 m-0">
+      <ul className="grid grid-cols-3 gap-4 list-none p-0 m-0 mb-6">
         {missions.map((mission) => {
           const state = missionLockState(mission.node, progressNode, lastCompletedDate, today);
           if (state === "locked") {
@@ -49,6 +50,9 @@ export function JourneyMap({ world, missions }: Props) {
           );
         })}
       </ul>
+      <FocusableButton variant="pill" className="bg-storybook-peach text-storybook-peachText" onPress={goToTrophyShelf}>
+        Trophy Shelf
+      </FocusableButton>
     </PageShell>
   );
 }

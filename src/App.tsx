@@ -6,6 +6,7 @@ import { useAuthStore } from "@/store/authStore";
 import { JourneyMap } from "@/screens/JourneyMap";
 import { MissionPlayer } from "@/screens/MissionPlayer";
 import { RewardScreen } from "@/screens/RewardScreen";
+import { TrophyShelf } from "@/screens/TrophyShelf";
 import { ProfilePicker } from "@/screens/ProfilePicker";
 import { LoginScreen } from "@/screens/LoginScreen";
 import { SignupWizard } from "@/screens/SignupWizard";
@@ -56,6 +57,9 @@ function MainApp() {
   }
   if (screen === "reward") {
     return <RewardScreen missionTitle={activeMission?.title ?? "Today's mission"} badges={content.badges} />;
+  }
+  if (screen === "trophyShelf") {
+    return <TrophyShelf badges={content.badges} />;
   }
   return <JourneyMap world={content.world} missions={content.missions} />;
 }

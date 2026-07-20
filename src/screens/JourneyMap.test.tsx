@@ -33,6 +33,13 @@ describe("JourneyMap", () => {
       expect(screen.getByRole("button", { name: /day 1/i })).toHaveAttribute("data-focused", "true"),
     );
   });
+
+  it("navigates to the Trophy Shelf when its button is pressed", async () => {
+    const user = userEvent.setup();
+    render(<JourneyMap world={world} missions={missions} />);
+    await user.click(screen.getByRole("button", { name: /trophy shelf/i }));
+    expect(useUiStore.getState().screen).toBe("trophyShelf");
+  });
 });
 
 describe("JourneyMap lock states", () => {

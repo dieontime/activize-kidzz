@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-export type Screen = "map" | "mission" | "reward";
+export type Screen = "map" | "mission" | "reward" | "trophyShelf";
 
 interface UiState {
   screen: Screen;
@@ -8,6 +8,7 @@ interface UiState {
   goToMap: () => void;
   startMission: (missionId: string) => void;
   goToReward: () => void;
+  goToTrophyShelf: () => void;
 }
 
 export const useUiStore = create<UiState>((set) => ({
@@ -16,4 +17,5 @@ export const useUiStore = create<UiState>((set) => ({
   goToMap: () => set({ screen: "map", activeMissionId: null }),
   startMission: (missionId) => set({ screen: "mission", activeMissionId: missionId }),
   goToReward: () => set({ screen: "reward" }),
+  goToTrophyShelf: () => set({ screen: "trophyShelf" }),
 }));

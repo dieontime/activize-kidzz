@@ -18,4 +18,9 @@ describe("uiStore", () => {
     useUiStore.getState().goToReward();
     expect(useUiStore.getState().screen).toBe("reward");
   });
+
+  it("goToTrophyShelf moves to the trophy shelf screen", () => {
+    useUiStore.getState().goToTrophyShelf();
+    expect(useUiStore.getState().screen).toBe("trophyShelf");
+  });
 });
