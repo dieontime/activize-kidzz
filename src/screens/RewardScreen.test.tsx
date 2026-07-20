@@ -37,7 +37,7 @@ describe("RewardScreen streak display", () => {
 
   it("shows a streak line when the streak is 2 or more days", () => {
     useProgressStore.getState().setProgress({
-      world: 0, node: 2, streakCount: 3, longestStreak: 3, lastCompletedDate: "2026-07-17",
+      world: 0, node: 2, streakCount: 3, longestStreak: 3, lastCompletedDate: "2026-07-17", totalMissionsCompleted: 3,
     });
     render(<RewardScreen missionTitle="Day 1: Wake Up Your Brain" />);
     expect(screen.getByText(/3-day streak/i)).toBeInTheDocument();
@@ -45,7 +45,7 @@ describe("RewardScreen streak display", () => {
 
   it("does not show a streak line on day 1 (no streak yet)", () => {
     useProgressStore.getState().setProgress({
-      world: 0, node: 2, streakCount: 1, longestStreak: 1, lastCompletedDate: "2026-07-17",
+      world: 0, node: 2, streakCount: 1, longestStreak: 1, lastCompletedDate: "2026-07-17", totalMissionsCompleted: 1,
     });
     render(<RewardScreen missionTitle="Day 1: Wake Up Your Brain" />);
     expect(screen.queryByText(/-day streak/i)).not.toBeInTheDocument();

@@ -4,6 +4,7 @@ export interface ProgressRecord {
   streakCount: number;
   longestStreak: number;
   lastCompletedDate: string | null;
+  totalMissionsCompleted: number;
 }
 
 // world is a 0-based index into manifest.worldIds; node is 1-based,
@@ -15,4 +16,5 @@ export const DEFAULT_PROGRESS: ProgressRecord = {
   streakCount: 0,
   longestStreak: 0,
   lastCompletedDate: null,
+  totalMissionsCompleted: 0,
 };

@@ -57,7 +57,7 @@ describe("lib/progress", () => {
 
     it("increments the streak when the previous completion was yesterday", async () => {
       await mockProgressBackend.saveProgress(PROFILE.id, {
-        world: 0, node: 2, streakCount: 3, longestStreak: 3, lastCompletedDate: "2026-07-16",
+        world: 0, node: 2, streakCount: 3, longestStreak: 3, lastCompletedDate: "2026-07-16", totalMissionsCompleted: 5,
       });
       vi.useFakeTimers();
       vi.setSystemTime(new Date("2026-07-17T12:00:00.000Z"));
@@ -70,7 +70,7 @@ describe("lib/progress", () => {
 
     it("resets the streak to 1 after a gap longer than a day", async () => {
       await mockProgressBackend.saveProgress(PROFILE.id, {
-        world: 0, node: 2, streakCount: 5, longestStreak: 5, lastCompletedDate: "2026-07-10",
+        world: 0, node: 2, streakCount: 5, longestStreak: 5, lastCompletedDate: "2026-07-10", totalMissionsCompleted: 8,
       });
       vi.useFakeTimers();
       vi.setSystemTime(new Date("2026-07-17T12:00:00.000Z"));
@@ -106,6 +106,12 @@ describe("lib/progress", () => {
       expect(after.lastCompletedDate).toBe(before.lastCompletedDate);
 
       saveSpy.mockRestore();
+    });
+
+    it("increments totalMissionsCompleted on each completion", async () => {
+      await loadProgress(PROFILE.id);
+      await recordMissionCompletion("mission-001", 1, 4);
+      expect(useProgressStore.getState().totalMissionsCompleted).toBe(1);
     });
   });
 });

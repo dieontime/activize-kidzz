@@ -46,7 +46,7 @@ describe("JourneyMap lock states", () => {
 
   it("renders a mission before the current node as completed (still a clickable button)", () => {
     useProgressStore.getState().setProgress({
-      world: 0, node: 2, streakCount: 1, longestStreak: 1, lastCompletedDate: "2020-01-01",
+      world: 0, node: 2, streakCount: 1, longestStreak: 1, lastCompletedDate: "2020-01-01", totalMissionsCompleted: 1,
     });
     render(<JourneyMap world={world} missions={threeMissions} />);
     expect(screen.getByRole("button", { name: /day 1/i })).toBeInTheDocument();
@@ -54,7 +54,7 @@ describe("JourneyMap lock states", () => {
 
   it("renders the mission at the current node as a focusable button", async () => {
     useProgressStore.getState().setProgress({
-      world: 0, node: 2, streakCount: 1, longestStreak: 1, lastCompletedDate: "2020-01-01",
+      world: 0, node: 2, streakCount: 1, longestStreak: 1, lastCompletedDate: "2020-01-01", totalMissionsCompleted: 1,
     });
     render(<JourneyMap world={world} missions={threeMissions} />);
     await waitFor(() =>
@@ -64,7 +64,7 @@ describe("JourneyMap lock states", () => {
 
   it("renders a mission after the current node as locked, not a button", () => {
     useProgressStore.getState().setProgress({
-      world: 0, node: 2, streakCount: 1, longestStreak: 1, lastCompletedDate: "2020-01-01",
+      world: 0, node: 2, streakCount: 1, longestStreak: 1, lastCompletedDate: "2020-01-01", totalMissionsCompleted: 1,
     });
     render(<JourneyMap world={world} missions={threeMissions} />);
     expect(screen.queryByRole("button", { name: /day 3/i })).not.toBeInTheDocument();
@@ -74,7 +74,7 @@ describe("JourneyMap lock states", () => {
   it("renders the current mission as locked if it was already completed today", () => {
     const today = new Date().toISOString().slice(0, 10);
     useProgressStore.getState().setProgress({
-      world: 0, node: 2, streakCount: 1, longestStreak: 1, lastCompletedDate: today,
+      world: 0, node: 2, streakCount: 1, longestStreak: 1, lastCompletedDate: today, totalMissionsCompleted: 1,
     });
     render(<JourneyMap world={world} missions={threeMissions} />);
     expect(screen.queryByRole("button", { name: /day 2/i })).not.toBeInTheDocument();

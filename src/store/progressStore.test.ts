@@ -15,7 +15,7 @@ describe("useProgressStore", () => {
 
   it("setProgress replaces the record and marks isLoaded true", () => {
     useProgressStore.getState().setProgress({
-      world: 0, node: 3, streakCount: 2, longestStreak: 5, lastCompletedDate: "2026-07-17",
+      world: 0, node: 3, streakCount: 2, longestStreak: 5, lastCompletedDate: "2026-07-17", totalMissionsCompleted: 4,
     });
     const state = useProgressStore.getState();
     expect(state.node).toBe(3);
@@ -27,7 +27,7 @@ describe("useProgressStore", () => {
 
   it("reset returns to the default zeroed state", () => {
     useProgressStore.getState().setProgress({
-      world: 0, node: 3, streakCount: 2, longestStreak: 5, lastCompletedDate: "2026-07-17",
+      world: 0, node: 3, streakCount: 2, longestStreak: 5, lastCompletedDate: "2026-07-17", totalMissionsCompleted: 4,
     });
     useProgressStore.getState().reset();
     const state = useProgressStore.getState();

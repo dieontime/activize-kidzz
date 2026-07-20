@@ -35,6 +35,7 @@ export async function recordMissionCompletion(
       streakCount,
       longestStreak: Math.max(current.longestStreak, streakCount),
       lastCompletedDate: todayDateString(),
+      totalMissionsCompleted: current.totalMissionsCompleted + 1,
     };
 
     await progressBackend.saveProgress(profileId, updated);

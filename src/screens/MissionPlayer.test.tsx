@@ -83,7 +83,7 @@ describe("MissionPlayer progress recording", () => {
       activeProfile: { id: "profile-1", username: "SpeedyOtter", avatar: "avatar_cat", age_band: "6-8" },
     });
     useProgressStore.getState().setProgress({
-      world: 0, node: 1, streakCount: 0, longestStreak: 0, lastCompletedDate: null,
+      world: 0, node: 1, streakCount: 0, longestStreak: 0, lastCompletedDate: null, totalMissionsCompleted: 0,
     });
   });
 
@@ -102,7 +102,7 @@ describe("MissionPlayer progress recording", () => {
 
   it("does not advance the node when replaying an already-completed mission", async () => {
     useProgressStore.getState().setProgress({
-      world: 0, node: 2, streakCount: 1, longestStreak: 1, lastCompletedDate: "2020-01-01",
+      world: 0, node: 2, streakCount: 1, longestStreak: 1, lastCompletedDate: "2020-01-01", totalMissionsCompleted: 1,
     });
     const user = userEvent.setup();
     render(<MissionPlayer mission={mission} activities={activities} />); // mission.node is 1, progress.node is 2
