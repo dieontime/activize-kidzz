@@ -4,6 +4,7 @@ import { recoverPin } from "@/lib/auth";
 import { FocusableButton } from "@/components/FocusableButton";
 import { PageShell } from "@/components/PageShell";
 import { useAuthStore } from "@/store/authStore";
+import { useInterstitialStore } from "@/store/interstitialStore";
 
 type Stage = "creds" | "newpin" | "done";
 
@@ -16,6 +17,7 @@ export function RecoveryScreen() {
   const [newRecovery, setNewRecovery] = useState<string | null>(null);
 
   const submitNewPin = async (pin: PinIcon[]) => {
+    useInterstitialStore.getState().setPending(true);
     try {
       const result = await recoverPin(username, code, pin);
       setNewRecovery(result.recoveryCode);
@@ -23,6 +25,8 @@ export function RecoveryScreen() {
     } catch (e) {
       setError(e instanceof Error ? e.message : "Recovery failed");
       setStage("creds");
+    } finally {
+      useInterstitialStore.getState().setPending(false);
     }
   };
 

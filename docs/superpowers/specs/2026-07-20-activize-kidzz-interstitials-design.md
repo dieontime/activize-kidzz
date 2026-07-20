@@ -31,26 +31,29 @@ export function useInterstitial(
 - State machine: `pending` true for longer than `delayMs` → `"showing"`. `pending` flips false while `"showing"` → `"ready"` for `readyFlashMs`, then `"hidden"`. `pending` flips false *before* `delayMs` elapses (fast load) → stays `"hidden"` for the whole cycle, no flash ever shown — the ready-flash is only earned once the interstitial actually appeared (spec's "no flash on fast loads" rule).
 - Picks one interstitial activity at random from the bundle each time it transitions into `"showing"` (not on every render).
 
-## 4. `InterstitialPlayer` Component
+## 4. Global Pending State + `InterstitialPlayer` Component
 
-`src/components/InterstitialPlayer.tsx`, props `{ pending: boolean }`:
+**Why global, not local:** in 4 of the 5 gates, the async call *succeeding* also triggers a navigation/step change that unmounts whatever component would be holding a locally-scoped `InterstitialPlayer` in the very same tick the pending flag flips to `false` — `LoginScreen`'s `login()` success swaps `App.tsx` straight to `<MainApp/>`; `SignupWizard`'s `signup()` success moves `step` to `"recovery"`, a different early-return branch; `RecoveryScreen`'s `recoverPin()` success moves `stage` to `"done"`, likewise a different branch; and `App.tsx`'s own boot load has the analogous problem with its `content.status === "loading"` early return. In every one of these cases a locally-scoped player would never get to show its "Ready!" flash — the subtree holding it disappears before the flash timer can complete. Mounting one player at a fixed point that never unmounts, driven by global state, sidesteps this uniformly.
 
-- Calls `useInterstitial(pending)` internally — callers only ever pass a `pending` boolean, never touch the hook or its timing directly.
-- `"hidden"` → renders `null`.
-- `"showing"` → a fixed-position, full-viewport overlay rendering the picked interstitial activity via `rendererRegistry[activity.renderer]` directly (no `FocusableButton`, no gate timer — `ExercisePlayer` is deliberately not reused here, since its entire purpose is the gate+validate-button flow this spec's "effort-neutral" rule explicitly rules out).
-- `"ready"` → same overlay, showing a brief "Ready!" message instead of the loop.
+- `src/store/interstitialStore.ts`: `useInterstitialStore` — `{ pending: boolean; setPending: (p: boolean) => void }`, matching the existing `uiStore`/`progressStore`/`authStore` pattern.
+- `src/components/InterstitialPlayer.tsx`: **no props** — reads `useInterstitialStore((s) => s.pending)` itself and calls `useInterstitial(pending)` internally.
+  - `"hidden"` → renders `null`.
+  - `"showing"` → a fixed-position, full-viewport overlay rendering the picked interstitial activity via `rendererRegistry[activity.renderer]` directly (no `FocusableButton`, no gate timer — `ExercisePlayer` is deliberately not reused here, since its entire purpose is the gate+validate-button flow this spec's "effort-neutral" rule explicitly rules out).
+  - `"ready"` → same overlay, showing a brief "Ready!" message instead of the loop.
+- Mounted **exactly once**, at the very top of `App.tsx`'s outer `App` function — above the `authScreen`-gated branching, as a sibling of whichever screen is currently rendered — so it persists across every screen transition in the app, auth or otherwise.
 
 ## 5. Wiring Into the Five Gates
 
-- **`App.tsx` boot load**: `MainApp` calls `useInterstitial(content.status === "loading")` directly (not through the component) and renders `<InterstitialPlayer pending={content.status === "loading"} />` whenever that hook's state isn't `"hidden"` — checked *before* the `content.status === "error"` branch. This keeps the interstitial mounted through its own "ready" flash even after `content.status` has already flipped to `"ready"`, which a naive `if (content.status === "loading") return ...` early-return could not do (it would stop being reached the instant status changes). This is the one gate where the interstitial fully replaces the screen — there's no underlying content yet to overlay.
-- **`LoginScreen`**: new `const [isPending, setIsPending] = useState(false)`, set `true`/`false` around the `login(...)` call in `onPinDone` via `try/finally` (existing `try/catch` error handling unchanged). Renders `<InterstitialPlayer pending={isPending} />` as an overlay sibling inside `PageShell`.
-- **`SignupWizard`**: one shared `isPending` state covers both `checkUsernameAvailable(...)` (in `goUsername`) and `signup(...)` (in `goBand`) — the two are never in flight simultaneously in this wizard's flow. Same overlay pattern.
-- **`RecoveryScreen`**: `isPending` around `recoverPin(...)` in `submitNewPin`. Same pattern.
+- **`App.tsx` boot load**: `MainApp` gets a `useEffect` syncing `content.status === "loading"` into `useInterstitialStore.getState().setPending(...)` whenever `content.status` changes.
+- **`LoginScreen`**: `useInterstitialStore.getState().setPending(true/false)` around the `login(...)` call in `onPinDone` via `try/finally` (existing `try/catch` error handling unchanged).
+- **`SignupWizard`**: the same store calls wrap both `checkUsernameAvailable(...)` (in `goUsername`) and `signup(...)` (in `goBand`) — the two are never in flight simultaneously in this wizard's flow.
+- **`RecoveryScreen`**: the same store calls wrap `recoverPin(...)` in `submitNewPin`.
+- None of the four screen-level call sites render `InterstitialPlayer` themselves anymore — they only ever call `setPending`.
 
 ## 6. Testing
 
 - **`useInterstitial`**: table-driven, real timers with tiny `delayMs`/`readyFlashMs` overrides. A fast resolve (pending flips false before `delayMs`) stays `"hidden"` throughout. A slow-resolving pending crosses into `"showing"`, then `"ready"` on resolve, then back to `"hidden"` after the flash window.
-- **`InterstitialPlayer`**: renders nothing while hidden; renders the looping activity content while showing; renders "Ready!" during the flash state.
+- **`InterstitialPlayer`**: driven by setting `useInterstitialStore`'s `pending` directly (it's a global store, not a prop) — renders nothing while hidden; renders the looping activity content while showing; renders "Ready!" during the flash state.
 - **`interstitialActivities`**: a sanity test that every bundled entry is a valid `MovementActivity`/`BreathingActivity` shape with a renderer the registry actually handles.
-- **Each auth screen**: a test using a deliberately slow-resolving mock of the relevant `lib/auth` function (with a tiny `delayMs` override passed through) confirming the interstitial appears mid-flight and clears after; existing error-path tests stay unchanged.
+- **Each auth screen**: a test using a deliberately slow-resolving mock of the relevant `backend` method (mirroring the `vi.spyOn(progressBackend, ...)` pattern already used in `lib/badges.test.ts`) confirming `useInterstitialStore`'s `pending` flag is set during the call and cleared after; existing error-path tests stay unchanged.
 - **`App.e2e.test.tsx`**: since that file's `useContent` fetch mock resolves near-instantly, the boot interstitial's 300ms default delay means it should *not* appear in the existing e2e run — add a quick assertion that boot proceeds straight to the map without the interstitial ever showing, confirming "no flash on fast loads" holds for the one gate already covered by e2e.

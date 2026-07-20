@@ -3,7 +3,9 @@ import userEvent from "@testing-library/user-event";
 import { RecoveryScreen } from "./RecoveryScreen";
 import { PIN_ICONS } from "@/components/EmojiPinKeypad";
 import { useAuthStore } from "@/store/authStore";
+import { useInterstitialStore } from "@/store/interstitialStore";
 import { mockBackend } from "@/services/mockBackend";
+import { backend } from "@/services/backend";
 import { initNavigation } from "@/navigation/initNavigation";
 
 beforeAll(() => initNavigation());
@@ -15,6 +17,7 @@ describe("RecoveryScreen", () => {
     mockBackend.reset();
     useAuthStore.getState().logout();
     useAuthStore.getState().setAuthScreen("recovery");
+    useInterstitialStore.getState().reset();
     const result = await mockBackend.signup({
       username: "SpeedyOtter", pin: ["🐱", "⚡", "🍕", "🌈"], avatar: "avatar_cat", age_band: "6-8",
     });
@@ -65,5 +68,29 @@ describe("RecoveryScreen", () => {
     render(<RecoveryScreen />);
     await user.click(screen.getByRole("button", { name: /back to login/i }));
     expect(useAuthStore.getState().authScreen).toBe("login");
+  });
+
+  it("sets the interstitial pending flag while recovering the PIN, and clears it after", async () => {
+    const recoverSpy = vi.spyOn(backend, "recoverPin").mockImplementationOnce(
+      (username, code, pin) => new Promise((resolve, reject) => {
+        setTimeout(() => mockBackend.recoverPin(username, code, pin).then(resolve, reject), 50);
+      }),
+    );
+    const user = userEvent.setup();
+    render(<RecoveryScreen />);
+    await user.type(screen.getByPlaceholderText(/silly name/i), "SpeedyOtter");
+    await user.type(screen.getByPlaceholderText(/recovery code/i), recoveryCode);
+    await user.click(screen.getByRole("button", { name: /next/i }));
+
+    await waitFor(() => expect(screen.getByRole("button", { name: PIN_ICONS[0] })).toBeInTheDocument());
+    await user.click(screen.getByRole("button", { name: PIN_ICONS[4] }));
+    await user.click(screen.getByRole("button", { name: PIN_ICONS[5] }));
+    await user.click(screen.getByRole("button", { name: PIN_ICONS[6] }));
+    await user.click(screen.getByRole("button", { name: PIN_ICONS[7] }));
+    await user.click(screen.getByRole("button", { name: /done/i }));
+
+    await waitFor(() => expect(useInterstitialStore.getState().pending).toBe(true));
+    await waitFor(() => expect(useInterstitialStore.getState().pending).toBe(false));
+    recoverSpy.mockRestore();
   });
 });

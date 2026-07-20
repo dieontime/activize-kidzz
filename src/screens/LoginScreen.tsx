@@ -4,6 +4,7 @@ import { login } from "@/lib/auth";
 import { FocusableButton } from "@/components/FocusableButton";
 import { PageShell } from "@/components/PageShell";
 import { useAuthStore } from "@/store/authStore";
+import { useInterstitialStore } from "@/store/interstitialStore";
 
 export function LoginScreen() {
   const completeAuthFlow = useAuthStore((s) => s.completeAuthFlow);
@@ -12,11 +13,14 @@ export function LoginScreen() {
   const [error, setError] = useState<string | null>(null);
 
   const onPinDone = async (pin: PinIcon[]) => {
+    useInterstitialStore.getState().setPending(true);
     try {
       await login(username, pin);
       completeAuthFlow();
     } catch (e) {
       setError(e instanceof Error ? e.message : "Something went wrong");
+    } finally {
+      useInterstitialStore.getState().setPending(false);
     }
   };
 

@@ -3,13 +3,16 @@ import userEvent from "@testing-library/user-event";
 import { LoginScreen } from "./LoginScreen";
 import { PIN_ICONS } from "@/components/EmojiPinKeypad";
 import { useAuthStore } from "@/store/authStore";
+import { useInterstitialStore } from "@/store/interstitialStore";
 import { mockBackend } from "@/services/mockBackend";
+import { backend } from "@/services/backend";
 import { initNavigation } from "@/navigation/initNavigation";
 
 beforeAll(() => initNavigation());
 beforeEach(async () => {
   mockBackend.reset();
   useAuthStore.getState().logout();
+  useInterstitialStore.getState().reset();
   await mockBackend.signup({
     username: "SpeedyOtter",
     pin: [PIN_ICONS[0], PIN_ICONS[1], PIN_ICONS[2], PIN_ICONS[3]],
@@ -74,5 +77,25 @@ describe("LoginScreen", () => {
     await waitFor(() =>
       expect(screen.getByRole("button", { name: /make a new player/i })).toHaveAttribute("data-focused", "true"),
     );
+  });
+
+  it("sets the interstitial pending flag while logging in, and clears it after", async () => {
+    const loginSpy = vi.spyOn(backend, "login").mockImplementationOnce(
+      (username, pin) => new Promise((resolve, reject) => {
+        setTimeout(() => mockBackend.login(username, pin).then(resolve, reject), 50);
+      }),
+    );
+    const user = userEvent.setup();
+    render(<LoginScreen />);
+    await user.type(screen.getByPlaceholderText(/silly name/i), "SpeedyOtter");
+    await user.click(screen.getByRole("button", { name: PIN_ICONS[0] }));
+    await user.click(screen.getByRole("button", { name: PIN_ICONS[1] }));
+    await user.click(screen.getByRole("button", { name: PIN_ICONS[2] }));
+    await user.click(screen.getByRole("button", { name: PIN_ICONS[3] }));
+    await user.click(screen.getByRole("button", { name: /done/i }));
+
+    await waitFor(() => expect(useInterstitialStore.getState().pending).toBe(true));
+    await waitFor(() => expect(useInterstitialStore.getState().pending).toBe(false));
+    loginSpy.mockRestore();
   });
 });

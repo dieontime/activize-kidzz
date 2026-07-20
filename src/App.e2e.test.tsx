@@ -4,6 +4,7 @@ import App from "@/App";
 import { useUiStore } from "@/store/uiStore";
 import { useAuthStore } from "@/store/authStore";
 import { useProgressStore } from "@/store/progressStore";
+import { useInterstitialStore } from "@/store/interstitialStore";
 import manifest from "@/content/__fixtures__/manifest.json";
 import world from "@/content/__fixtures__/world-jungle.json";
 import mission from "@/content/__fixtures__/mission-001.json";
@@ -27,6 +28,7 @@ const byPath: Record<string, unknown> = {
 beforeEach(() => {
   useUiStore.getState().goToMap();
   useProgressStore.getState().reset();
+  useInterstitialStore.getState().reset();
   window.localStorage.clear();
   useAuthStore.setState({
     authScreen: null,
@@ -120,6 +122,13 @@ describe("App end-to-end", () => {
     render(<App />);
     await waitFor(() => expect(screen.getByText(/jungle jump/i)).toBeInTheDocument());
   }, 10000);
+
+  it("does not show an interstitial when content loads faster than the delay threshold", async () => {
+    render(<App />);
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+    await waitFor(() => expect(screen.getByText(/jungle jump/i)).toBeInTheDocument());
+    expect(screen.queryByRole("status")).not.toBeInTheDocument();
+  });
 });
 
 describe("App auth gating", () => {

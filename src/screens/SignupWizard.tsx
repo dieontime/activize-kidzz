@@ -7,6 +7,7 @@ import { signup, checkUsernameAvailable } from "@/lib/auth";
 import { FocusableButton } from "@/components/FocusableButton";
 import { PageShell } from "@/components/PageShell";
 import { useAuthStore } from "@/store/authStore";
+import { useInterstitialStore } from "@/store/interstitialStore";
 
 type Step = "username" | "pin" | "avatar" | "band" | "recovery";
 
@@ -30,15 +31,20 @@ export function SignupWizard() {
       setSuggestions(suggestUsernames(username, 3));
       return;
     }
-    const ok = await checkUsernameAvailable(username);
-    if (!ok) {
-      setUsernameError("That name is already taken");
-      setSuggestions(suggestUsernames(username, 3));
-      return;
+    useInterstitialStore.getState().setPending(true);
+    try {
+      const ok = await checkUsernameAvailable(username);
+      if (!ok) {
+        setUsernameError("That name is already taken");
+        setSuggestions(suggestUsernames(username, 3));
+        return;
+      }
+      setUsernameError(null);
+      setSuggestions([]);
+      setStep("pin");
+    } finally {
+      useInterstitialStore.getState().setPending(false);
     }
-    setUsernameError(null);
-    setSuggestions([]);
-    setStep("pin");
   };
 
   const goPinDone = (icons: PinIcon[]) => {
@@ -52,9 +58,14 @@ export function SignupWizard() {
 
   const goBand = async (band: "3-5" | "6-8") => {
     if (!avatar) return;
-    const result = await signup({ username, pin, avatar, age_band: band });
-    setRecoveryCode(result.recoveryCode);
-    setStep("recovery");
+    useInterstitialStore.getState().setPending(true);
+    try {
+      const result = await signup({ username, pin, avatar, age_band: band });
+      setRecoveryCode(result.recoveryCode);
+      setStep("recovery");
+    } finally {
+      useInterstitialStore.getState().setPending(false);
+    }
   };
 
   if (step === "recovery" && recoveryCode) {

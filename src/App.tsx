@@ -1,8 +1,10 @@
-import { useEffect } from "react";
+import { useEffect, type ReactNode } from "react";
 import { initNavigation } from "@/navigation/initNavigation";
 import { useContent } from "@/content/useContent";
 import { useUiStore } from "@/store/uiStore";
 import { useAuthStore } from "@/store/authStore";
+import { useInterstitialStore } from "@/store/interstitialStore";
+import { InterstitialPlayer } from "@/components/InterstitialPlayer";
 import { JourneyMap } from "@/screens/JourneyMap";
 import { MissionPlayer } from "@/screens/MissionPlayer";
 import { RewardScreen } from "@/screens/RewardScreen";
@@ -17,12 +19,19 @@ export default function App() {
   useEffect(() => initNavigation(), []);
   const authScreen = useAuthStore((s) => s.authScreen);
 
-  if (authScreen === "profilePicker") return <ProfilePicker />;
-  if (authScreen === "login") return <LoginScreen />;
-  if (authScreen === "signup") return <SignupWizard />;
-  if (authScreen === "recovery") return <RecoveryScreen />;
+  let screen: ReactNode;
+  if (authScreen === "profilePicker") screen = <ProfilePicker />;
+  else if (authScreen === "login") screen = <LoginScreen />;
+  else if (authScreen === "signup") screen = <SignupWizard />;
+  else if (authScreen === "recovery") screen = <RecoveryScreen />;
+  else screen = <MainApp />;
 
-  return <MainApp />;
+  return (
+    <>
+      <InterstitialPlayer />
+      {screen}
+    </>
+  );
 }
 
 function MainApp() {
@@ -30,7 +39,11 @@ function MainApp() {
   const screen = useUiStore((s) => s.screen);
   const activeMissionId = useUiStore((s) => s.activeMissionId);
 
-  if (content.status === "loading") return <p>Getting ready…</p>;
+  useEffect(() => {
+    useInterstitialStore.getState().setPending(content.status === "loading");
+  }, [content.status]);
+
+  if (content.status === "loading") return null;
   if (content.status === "error" || !content.world) {
     return (
       <div>

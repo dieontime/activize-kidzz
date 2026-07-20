@@ -4,7 +4,9 @@ import { SignupWizard } from "./SignupWizard";
 import { PIN_ICONS } from "@/components/EmojiPinKeypad";
 import { AVATARS, AVATAR_EMOJI } from "@/components/AvatarPicker";
 import { useAuthStore } from "@/store/authStore";
+import { useInterstitialStore } from "@/store/interstitialStore";
 import { mockBackend } from "@/services/mockBackend";
+import { backend } from "@/services/backend";
 import { initNavigation } from "@/navigation/initNavigation";
 
 beforeAll(() => initNavigation());
@@ -12,6 +14,7 @@ beforeEach(() => {
   mockBackend.reset();
   useAuthStore.getState().logout();
   useAuthStore.getState().setAuthScreen("signup");
+  useInterstitialStore.getState().reset();
 });
 
 async function fillUsernameStep(user: ReturnType<typeof userEvent.setup>, name: string) {
@@ -68,5 +71,21 @@ describe("SignupWizard", () => {
     // avoid false positives like "Cassidy"/"grasshopper"/"hello"/"Michelle".
     await fillUsernameStep(user, "SuperHellBoy");
     expect(await screen.findByText(/try another name/i)).toBeInTheDocument();
+  });
+
+  it("sets the interstitial pending flag while checking username availability, and clears it after", async () => {
+    const checkSpy = vi.spyOn(backend, "checkUsernameAvailable").mockImplementationOnce(
+      (username) => new Promise((resolve, reject) => {
+        setTimeout(() => mockBackend.checkUsernameAvailable(username).then(resolve, reject), 50);
+      }),
+    );
+    const user = userEvent.setup();
+    render(<SignupWizard />);
+    await user.type(screen.getByPlaceholderText(/silly name/i), "SpeedyOtter");
+    await user.click(screen.getByRole("button", { name: /next/i }));
+
+    await waitFor(() => expect(useInterstitialStore.getState().pending).toBe(true));
+    await waitFor(() => expect(useInterstitialStore.getState().pending).toBe(false));
+    checkSpy.mockRestore();
   });
 });
