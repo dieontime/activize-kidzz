@@ -8,12 +8,20 @@ import manifest from "@/content/__fixtures__/manifest.json";
 import world from "@/content/__fixtures__/world-jungle.json";
 import mission from "@/content/__fixtures__/mission-001.json";
 import activity from "@/content/__fixtures__/activity-cross-crawl.json";
+import badgeStreak3 from "@/content/__fixtures__/badge-streak-3.json";
+import badgeStreak7 from "@/content/__fixtures__/badge-streak-7.json";
+import badgeWorldComplete from "@/content/__fixtures__/badge-world-complete-jungle.json";
+import badgeMissionsTotal from "@/content/__fixtures__/badge-missions-total.json";
 
 const byPath: Record<string, unknown> = {
   "/content/manifest.json": manifest,
   "/content/worlds/world-jungle.json": world,
   "/content/missions/mission-001.json": mission,
   "/content/activities/activity-cross-crawl.json": activity,
+  "/content/badges/badge-streak-3.json": badgeStreak3,
+  "/content/badges/badge-streak-7.json": badgeStreak7,
+  "/content/badges/badge-world-complete-jungle.json": badgeWorldComplete,
+  "/content/badges/badge-missions-total.json": badgeMissionsTotal,
 };
 
 beforeEach(() => {

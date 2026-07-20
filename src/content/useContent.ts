@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createContentLoader } from "./loader";
 import { useProgressStore } from "@/store/progressStore";
-import type { World, Mission, Activity } from "./types";
+import type { World, Mission, Activity, Badge } from "./types";
 
 const baseUrl = import.meta.env.VITE_CONTENT_URL ?? "/content";
 
@@ -10,11 +10,18 @@ export interface ContentState {
   world: World | null;
   missions: Mission[];
   activitiesByMission: Record<string, Activity[]>;
+  badges: Badge[];
   retry: () => void;
 }
 
 export function useContent(): ContentState {
-  const [state, setState] = useState<Omit<ContentState, "retry">>({ status: "loading", world: null, missions: [], activitiesByMission: {} });
+  const [state, setState] = useState<Omit<ContentState, "retry">>({
+    status: "loading",
+    world: null,
+    missions: [],
+    activitiesByMission: {},
+    badges: [],
+  });
   const [attempt, setAttempt] = useState(0);
 
   useEffect(() => {
@@ -32,7 +39,8 @@ export function useContent(): ContentState {
         for (const mission of missions) {
           activitiesByMission[mission.id] = await Promise.all(mission.activityIds.map((id) => loader.loadActivity(id)));
         }
-        if (!cancelled) setState({ status: "ready", world, missions, activitiesByMission });
+        const badges = await Promise.all(manifest.badgeIds.map((id) => loader.loadBadge(id)));
+        if (!cancelled) setState({ status: "ready", world, missions, activitiesByMission, badges });
       } catch {
         if (!cancelled) setState((s) => ({ ...s, status: "error" }));
       }

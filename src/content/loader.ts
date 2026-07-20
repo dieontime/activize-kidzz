@@ -1,5 +1,5 @@
-import { parseManifest, parseWorld, parseMission, parseActivity } from "./schema";
-import type { Manifest, World, Mission, Activity } from "./types";
+import { parseManifest, parseWorld, parseMission, parseActivity, parseBadge } from "./schema";
+import type { Manifest, World, Mission, Activity, Badge } from "./types";
 
 export interface ContentLoaderDeps {
   baseUrl: string;
@@ -12,6 +12,7 @@ export interface ContentLoader {
   loadWorld(id: string): Promise<World>;
   loadMission(id: string): Promise<Mission>;
   loadActivity(id: string): Promise<Activity>;
+  loadBadge(id: string): Promise<Badge>;
 }
 
 const KEY = "activize:content:";
@@ -52,5 +53,6 @@ export function createContentLoader(deps: ContentLoaderDeps): ContentLoader {
     loadWorld: (id) => load(`worlds/${id}.json`, parseWorld),
     loadMission: (id) => load(`missions/${id}.json`, parseMission),
     loadActivity: (id) => load(`activities/${id}.json`, parseActivity),
+    loadBadge: (id) => load(`badges/${id}.json`, parseBadge),
   };
 }
