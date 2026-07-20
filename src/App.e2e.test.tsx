@@ -3,6 +3,7 @@ import userEvent from "@testing-library/user-event";
 import App from "@/App";
 import { useUiStore } from "@/store/uiStore";
 import { useAuthStore } from "@/store/authStore";
+import { useProgressStore } from "@/store/progressStore";
 import manifest from "@/content/__fixtures__/manifest.json";
 import world from "@/content/__fixtures__/world-jungle.json";
 import mission from "@/content/__fixtures__/mission-001.json";
@@ -17,8 +18,12 @@ const byPath: Record<string, unknown> = {
 
 beforeEach(() => {
   useUiStore.getState().goToMap();
+  useProgressStore.getState().reset();
   window.localStorage.clear();
-  useAuthStore.setState({ authScreen: null });
+  useAuthStore.setState({
+    authScreen: null,
+    activeProfile: { id: "e2e-profile", username: "TestKid", avatar: "avatar_cat", age_band: "6-8" },
+  });
   vi.stubGlobal("fetch", vi.fn(async (url: string) => ({ ok: true, json: async () => byPath[url] })));
 });
 
@@ -65,6 +70,35 @@ describe("App end-to-end", () => {
 
     await user.click(screen.getByRole("button", { name: /retry/i }));
 
+    await waitFor(() => expect(screen.getByText(/jungle jump/i)).toBeInTheDocument());
+  });
+
+  it("persists progress across a reload: the advanced node survives an in-memory reset", async () => {
+    const user = userEvent.setup();
+    const { unmount } = render(<App />);
+
+    await waitFor(() =>
+      expect(screen.getByRole("button", { name: /wake up your brain/i })).toHaveAttribute("data-focused", "true"),
+    );
+    await user.click(screen.getByRole("button", { name: /wake up your brain/i }));
+    await user.click(screen.getByRole("button", { name: /done/i }));
+    await waitFor(() => expect(screen.getByText(/you did it/i)).toBeInTheDocument());
+    await user.click(screen.getByRole("button", { name: /back to map/i }));
+    await waitFor(() => expect(useProgressStore.getState().node).toBe(2));
+
+    unmount();
+    // Simulate a real page reload: reset in-memory state (a fresh JS
+    // runtime would start here), but keep the persisted mockProgressBackend
+    // data intact -- that's the whole point of this test.
+    useProgressStore.getState().reset();
+    useUiStore.getState().goToMap();
+    expect(useProgressStore.getState().node).toBe(1); // in-memory state genuinely cleared
+
+    const { loadProgress } = await import("@/lib/progress");
+    await loadProgress("e2e-profile");
+    expect(useProgressStore.getState().node).toBe(2); // persisted value restored from the backend
+
+    render(<App />);
     await waitFor(() => expect(screen.getByText(/jungle jump/i)).toBeInTheDocument());
   });
 });
