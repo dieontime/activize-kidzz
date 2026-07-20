@@ -22,7 +22,7 @@ Mirrors the existing auth pattern (`authStore`/`mockBackend`/`supabaseBackend`/`
 
 **Wiring into auth:** `lib/auth.ts`'s `signup`/`login` call `loadProgress(profile.id)` immediately after `useAuthStore.getState().login(...)` — the same place `addKnownProfile` is already called. `useAuthStore.logout()` also resets `progressStore` to its zeroed default — critical for the multi-kid shared-TV model, so one kid's progress can never leak into the next kid's `ProfilePicker` session on the same TV.
 
-**No progress row on signup.** `loadProgress` returns a zeroed default (`node: 0, streakCount: 0, longestStreak: 0, lastCompletedDate: null`) when the DB has no row for that profile yet. The row is only ever created by the completion upsert (`recordMissionCompletion`) — matching the spec's "single upsert at mission-complete" write pattern, no extra write at signup time.
+**No progress row on signup.** `loadProgress` returns a zeroed default (`node: 1, streakCount: 0, longestStreak: 0, lastCompletedDate: null`) when the DB has no row for that profile yet. `node` is 1-based, matching the already-authored `Mission.node` ("Day N") numbering — not a 0-based array index. The row is only ever created by the completion upsert (`recordMissionCompletion`) — matching the spec's "single upsert at mission-complete" write pattern, no extra write at signup time.
 
 ## 3. Data model (migration)
 
@@ -55,16 +55,16 @@ RLS: permissive `anon`/`authenticated` CRUD on all three tables (matches the spe
 
 ## 4. Daily-gate lock-state model
 
-For a mission at index `i` within the active world's `missionIds`, compared against `progress.node` and `progress.last_completed_date`:
+For a mission with its authored `Mission.node` value (1-based, matching "Day N"), compared against `progress.node` and `progress.last_completed_date`:
 
 | Condition | State | Rendering |
 |---|---|---|
-| `i < node` | completed | clickable (see replay note below), visually marked done |
-| `i === node` and `last_completed_date !== today` | current | clickable, auto-focused (today's mission) |
-| `i === node` and `last_completed_date === today` | done-for-today | locked — not a `FocusableButton`, D-pad focus can't land on it |
-| `i > node` | locked | locked — same as above |
+| `mission.node < progress.node` | completed | clickable (see replay note below), visually marked done |
+| `mission.node === progress.node` and `last_completed_date !== today` | current | clickable, auto-focused (today's mission) |
+| `mission.node === progress.node` and `last_completed_date === today` | done-for-today | locked — not a `FocusableButton`, D-pad focus can't land on it |
+| `mission.node > progress.node` | locked | locked — same as above |
 
-A fresh profile (`node: 0, last_completed_date: null`) has mission 0 immediately in the **current** state. "Today" is a client-side local-date comparison (midnight boundary), matching the existing streak-logic convention already decided in the master spec.
+A fresh profile (`node: 1, last_completed_date: null`) has the mission at `node: 1` ("Day 1") immediately in the **current** state. "Today" is a UTC-date-string comparison (`YYYY-MM-DD`, midnight boundary), matching the existing streak-logic convention already decided in the master spec.
 
 **Replaying a completed mission does not call `recordMissionCompletion`.** Only reaching the reward screen via the **current** mission does. Past missions stay replayable — per spec §4's "no failure, no losing" design rule, locking a kid out of a favorite mission would read as punitive, not motivating.
 
