@@ -3,6 +3,7 @@ import { useAuthStore } from "@/store/authStore";
 import { useProgressStore } from "@/store/progressStore";
 import { mockBackend } from "@/services/mockBackend";
 import { mockProgressBackend } from "@/services/mockProgressBackend";
+import { progressBackend } from "@/services/progressBackend";
 
 describe("auth", () => {
   beforeEach(() => {
@@ -51,6 +52,33 @@ describe("auth", () => {
     useAuthStore.getState().logout();
     await login("SpeedyOtter", ["🐱", "⚡", "🍕", "🌈"]);
     expect(useProgressStore.getState().isLoaded).toBe(true);
+  });
+
+  it("signup still succeeds and returns the recovery code even if loading progress fails", async () => {
+    const loadSpy = vi.spyOn(progressBackend, "loadProgress").mockRejectedValueOnce(new Error("network down"));
+
+    const { profile, recoveryCode } = await signup({
+      username: "SpeedyOtter", pin: ["🐱", "⚡", "🍕", "🌈"], avatar: "avatar_cat", age_band: "6-8",
+    });
+
+    expect(profile.username).toBe("SpeedyOtter");
+    expect(recoveryCode).toMatch(/^[A-Z]+-[A-Z]+-\d{4}$/);
+    expect(useAuthStore.getState().activeProfile?.username).toBe("SpeedyOtter");
+
+    loadSpy.mockRestore();
+  });
+
+  it("login still succeeds even if loading progress fails", async () => {
+    await signup({ username: "SpeedyOtter", pin: ["🐱", "⚡", "🍕", "🌈"], avatar: "avatar_cat", age_band: "6-8" });
+    useAuthStore.getState().logout();
+
+    const loadSpy = vi.spyOn(progressBackend, "loadProgress").mockRejectedValueOnce(new Error("network down"));
+
+    const profile = await login("SpeedyOtter", ["🐱", "⚡", "🍕", "🌈"]);
+    expect(profile.username).toBe("SpeedyOtter");
+    expect(useAuthStore.getState().activeProfile?.username).toBe("SpeedyOtter");
+
+    loadSpy.mockRestore();
   });
 
   it("logout resets the progress store", async () => {
