@@ -55,7 +55,7 @@ function MainApp() {
     );
   }
   if (screen === "reward") {
-    return <RewardScreen missionTitle={activeMission?.title ?? "Today's mission"} />;
+    return <RewardScreen missionTitle={activeMission?.title ?? "Today's mission"} badges={content.badges} />;
   }
   return <JourneyMap world={content.world} missions={content.missions} />;
 }
