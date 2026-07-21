@@ -49,6 +49,24 @@ describe("MissionPlayer", () => {
     expect(useUiStore.getState().screen).toBe("reward");
   });
 
+  it("renders and solves a puzzle activity, advancing to the reward screen", async () => {
+    const user = userEvent.setup();
+    const puzzleMission: Mission = { id: "mission-001", worldId: "world-jungle", node: 1, title: "Day 1", activityIds: ["p1"] };
+    const puzzleActivities: Activity[] = [
+      {
+        id: "p1", type: "puzzle", title: "Remember the Order", ageBands: ["6-8"], narration: "p1.mp3",
+        puzzle: { puzzleType: "sequence_memory", icons: ["🐱", "🐶"], sequence: ["🐱"] },
+      },
+    ];
+    render(<MissionPlayer mission={puzzleMission} activities={puzzleActivities} badges={[]} worldId="world-jungle" totalMissionsInWorld={1} />);
+
+    expect(screen.getByText(/remember the order/i)).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole("button", { name: "🐱" })).not.toBeDisabled(), { timeout: 3000 });
+    await user.click(screen.getByRole("button", { name: "🐱" }));
+
+    await waitFor(() => expect(useUiStore.getState().screen).toBe("reward"), { timeout: 3000 });
+  }, 10000);
+
   it("goes straight to the reward screen when the mission has no activities", async () => {
     render(<MissionPlayer mission={mission} activities={[]} badges={[]} worldId="world-jungle" totalMissionsInWorld={1} />);
     await waitFor(() => expect(useUiStore.getState().screen).toBe("reward"));

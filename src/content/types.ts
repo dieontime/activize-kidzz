@@ -42,9 +42,11 @@ export interface MovementActivity extends ActivityBase {
 
 export interface PuzzleActivity extends ActivityBase {
   type: "puzzle";
-  puzzleType: string;
-  data: Record<string, unknown>;
+  puzzle: PuzzleData;
 }
+
+export type PuzzleData =
+  | { puzzleType: "sequence_memory"; icons: string[]; sequence: string[] };
 
 export interface BreathingActivity extends ActivityBase {
   type: "breathing";

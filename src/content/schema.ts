@@ -29,9 +29,29 @@ const missionSchema = z.object({
 
 const activityBase = { id: z.string(), title: z.string(), ageBands: z.array(ageBand), narration: z.string(), interstitial: z.boolean().optional() };
 
+const sequenceMemoryDataSchema = z
+  .object({
+    puzzleType: z.literal("sequence_memory"),
+    icons: z.array(z.string()),
+    sequence: z.array(z.string()),
+  })
+  .refine((data) => data.sequence.every((s) => data.icons.includes(s)), {
+    message: "every sequence value must exist in icons",
+  })
+  .refine((data) => new Set(data.icons).size === data.icons.length, {
+    message: "icons must not contain duplicates",
+  });
+
+// Only one puzzle kind exists so far -- this becomes a real
+// z.discriminatedUnion("puzzleType", [...]) once a second kind ships.
+// z.discriminatedUnion's branches must stay plain ZodObjects; the
+// cross-field .refine() checks above only compose post-union, not
+// per-branch, so the union itself waits until there's more than one kind.
+const puzzleDataSchema = sequenceMemoryDataSchema;
+
 const activitySchema = z.discriminatedUnion("type", [
   z.object({ ...activityBase, type: z.literal("movement"), renderer, asset: z.string(), pacing: z.object({ reps: z.number(), tempoMs: z.number() }), instructions: z.string() }),
-  z.object({ ...activityBase, type: z.literal("puzzle"), puzzleType: z.string(), data: z.record(z.unknown()) }),
+  z.object({ ...activityBase, type: z.literal("puzzle"), puzzle: puzzleDataSchema }),
   z.object({ ...activityBase, type: z.literal("breathing"), renderer, asset: z.string(), cycles: z.number() }),
 ]);
 

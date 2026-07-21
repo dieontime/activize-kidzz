@@ -173,7 +173,9 @@ describe("useSequenceMemory", () => {
   });
 
   it("advances the watch step over time, then enters input", async () => {
-    const { result } = renderHook(() => useSequenceMemory(["🐱", "🐶"], () => {}, { stepMs: 10, successFlashMs: 10 }));
+    // stepMs must clear waitFor's ~50ms poll interval, or watchIndex can
+    // advance past 1 between polls before this assertion ever observes it.
+    const { result } = renderHook(() => useSequenceMemory(["🐱", "🐶"], () => {}, { stepMs: 100, successFlashMs: 10 }));
     await waitFor(() => expect(result.current.watchIndex).toBe(1));
     await waitFor(() => expect(result.current.phase).toBe("input"));
   });
@@ -605,7 +607,7 @@ import { FocusableButton } from "@/components/FocusableButton";
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `cd /c/Repos/activize-kidzz && npx vitest run src/screens/MissionPlayer.test.tsx`
-Expected: PASS (13 tests: 12 existing + 1 new)
+Expected: PASS (11 tests: 10 existing + 1 new)
 
 - [ ] **Step 5: Full verification**
 

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { PageShell } from "@/components/PageShell";
-import { FocusableButton } from "@/components/FocusableButton";
 import { ExercisePlayer } from "@/components/ExercisePlayer";
+import { PuzzlePlayer } from "@/components/PuzzlePlayer";
 import { useUiStore } from "@/store/uiStore";
 import { recordMissionCompletion } from "@/lib/progress";
 import { evaluateAndAwardBadges } from "@/lib/badges";
@@ -55,16 +55,7 @@ export function MissionPlayer({ mission, activities, badges, worldId, totalMissi
         {activity.type === "movement" || activity.type === "breathing" ? (
           <ExercisePlayer key={activity.id} activity={activity} onValidated={onDone} />
         ) : (
-          <FocusableButton
-            key={activity.id}
-            variant="pill"
-            className="bg-storybook-peach text-storybook-peachText"
-            autoFocus
-            focusKey={`done-${activity.id}`}
-            onPress={onDone}
-          >
-            Done
-          </FocusableButton>
+          <PuzzlePlayer key={activity.id} activity={activity} onValidated={onDone} />
         )}
       </section>
     </PageShell>

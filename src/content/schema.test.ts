@@ -7,6 +7,12 @@ import badgeWorldCompleteJson from "./__fixtures__/badge-world-complete-jungle.j
 import badgeMissionsTotalJson from "./__fixtures__/badge-missions-total.json";
 import { parseManifest, parseWorld, parseMission, parseActivity, parseBadge } from "./schema";
 
+const puzzleActivityJson = {
+  id: "activity-sequence-1", type: "puzzle", title: "Remember the Order",
+  ageBands: ["6-8"], narration: "sequence-1.mp3",
+  puzzle: { puzzleType: "sequence_memory", icons: ["🐱", "🐶", "🐰"], sequence: ["🐱", "🐶"] },
+};
+
 describe("content schema", () => {
   it("parses a valid manifest", () => {
     expect(parseManifest(manifestJson).worldIds).toEqual(["world-jungle"]);
@@ -30,6 +36,32 @@ describe("content schema", () => {
 
   it("rejects an activity with an unknown type", () => {
     expect(() => parseActivity({ ...activityJson, type: "dance" })).toThrow();
+  });
+
+  it("parses a puzzle activity with a sequence_memory puzzle", () => {
+    const a = parseActivity(puzzleActivityJson);
+    expect(a.type).toBe("puzzle");
+    if (a.type === "puzzle") {
+      expect(a.puzzle).toEqual({ puzzleType: "sequence_memory", icons: ["🐱", "🐶", "🐰"], sequence: ["🐱", "🐶"] });
+    }
+  });
+
+  it("rejects a sequence_memory puzzle whose sequence references an icon not in icons", () => {
+    expect(() =>
+      parseActivity({
+        ...puzzleActivityJson,
+        puzzle: { puzzleType: "sequence_memory", icons: ["🐱", "🐶"], sequence: ["🐱", "🦊"] },
+      }),
+    ).toThrow();
+  });
+
+  it("rejects a sequence_memory puzzle with duplicate icons", () => {
+    expect(() =>
+      parseActivity({
+        ...puzzleActivityJson,
+        puzzle: { puzzleType: "sequence_memory", icons: ["🐱", "🐱", "🐶"], sequence: ["🐱"] },
+      }),
+    ).toThrow();
   });
 
   it("rejects a manifest missing worldIds", () => {
