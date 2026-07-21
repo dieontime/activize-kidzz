@@ -1,0 +1,1 @@
+{ "id": "badge-streak-7", "name": "7-Day Streak", "emoji": "🌟", "rule": { "kind": "streak", "value": 7 } }

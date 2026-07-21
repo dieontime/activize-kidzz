@@ -1,0 +1,7 @@
+{
+  "id": "mission-001",
+  "worldId": "world-jungle",
+  "node": 1,
+  "title": "Day 1: Wake Up Your Brain",
+  "activityIds": ["activity-cross-crawl"]
+}

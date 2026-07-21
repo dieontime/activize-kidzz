@@ -1,0 +1,8 @@
+{
+  "id": "world-jungle",
+  "order": 1,
+  "theme": "jungle",
+  "name": "Jungle Jump",
+  "missionIds": ["mission-001"],
+  "art": "worlds/jungle.png"
+}
