@@ -1,0 +1,7 @@
+{
+  "id": "mission-008",
+  "worldId": "world-jungle",
+  "node": 8,
+  "title": "Day 8: Memory Match",
+  "activityIds": ["activity-cross-crawl", "activity-puzzle-weather"]
+}

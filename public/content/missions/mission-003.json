@@ -1,0 +1,7 @@
+{
+  "id": "mission-003",
+  "worldId": "world-jungle",
+  "node": 3,
+  "title": "Day 3: Reach and Remember",
+  "activityIds": ["activity-toe-touches", "activity-puzzle-critters"]
+}

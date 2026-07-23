@@ -1,0 +1,8 @@
+{
+  "id": "activity-puzzle-fruits",
+  "type": "puzzle",
+  "title": "Fruit Stand Memory",
+  "ageBands": ["6-8"],
+  "narration": "puzzle-fruits.mp3",
+  "puzzle": { "puzzleType": "sequence_memory", "icons": ["🍎", "🍌", "🍇", "🍊"], "sequence": ["🍎", "🍌", "🍇"] }
+}

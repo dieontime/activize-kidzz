@@ -1,0 +1,7 @@
+{
+  "id": "mission-009",
+  "worldId": "world-jungle",
+  "node": 9,
+  "title": "Day 9: Stretch and Sway",
+  "activityIds": ["activity-windmill-reach", "activity-balloon-breathing"]
+}

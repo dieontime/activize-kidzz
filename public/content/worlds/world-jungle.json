@@ -3,6 +3,6 @@
   "order": 1,
   "theme": "jungle",
   "name": "Jungle Jump",
-  "missionIds": ["mission-001"],
+  "missionIds": ["mission-001", "mission-002", "mission-003", "mission-004", "mission-005", "mission-006", "mission-007", "mission-008", "mission-009", "mission-010"],
   "art": "worlds/jungle.png"
 }

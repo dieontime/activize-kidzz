@@ -1,0 +1,8 @@
+{
+  "id": "activity-puzzle-space",
+  "type": "puzzle",
+  "title": "Space Voyage Memory",
+  "ageBands": ["6-8"],
+  "narration": "puzzle-space.mp3",
+  "puzzle": { "puzzleType": "sequence_memory", "icons": ["🚀", "🪐", "⭐", "🌙", "☄️"], "sequence": ["🚀", "🪐", "⭐", "🌙"] }
+}

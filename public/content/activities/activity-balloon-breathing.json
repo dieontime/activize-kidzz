@@ -1,0 +1,10 @@
+{
+  "id": "activity-balloon-breathing",
+  "type": "breathing",
+  "title": "Balloon Breathing",
+  "ageBands": ["6-8"],
+  "renderer": "react",
+  "asset": "balloon-breathing",
+  "narration": "balloon-breathing.mp3",
+  "cycles": 4
+}

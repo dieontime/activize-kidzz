@@ -1,0 +1,10 @@
+{
+  "id": "activity-belly-breaths",
+  "type": "breathing",
+  "title": "Belly Breaths",
+  "ageBands": ["6-8"],
+  "renderer": "react",
+  "asset": "belly-breaths",
+  "narration": "belly-breaths.mp3",
+  "cycles": 4
+}

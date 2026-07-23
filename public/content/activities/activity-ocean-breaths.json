@@ -1,0 +1,10 @@
+{
+  "id": "activity-ocean-breaths",
+  "type": "breathing",
+  "title": "Ocean Breaths",
+  "ageBands": ["6-8"],
+  "renderer": "react",
+  "asset": "ocean-breaths",
+  "narration": "ocean-breaths.mp3",
+  "cycles": 4
+}

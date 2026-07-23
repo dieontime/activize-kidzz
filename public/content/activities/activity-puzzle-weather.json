@@ -1,0 +1,8 @@
+{
+  "id": "activity-puzzle-weather",
+  "type": "puzzle",
+  "title": "Weather Watch",
+  "ageBands": ["6-8"],
+  "narration": "puzzle-weather.mp3",
+  "puzzle": { "puzzleType": "sequence_memory", "icons": ["☀️", "🌧️", "❄️", "⛈️", "🌈"], "sequence": ["☀️", "🌧️", "❄️", "⛈️"] }
+}

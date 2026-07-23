@@ -1,0 +1,7 @@
+{
+  "id": "mission-007",
+  "worldId": "world-jungle",
+  "node": 7,
+  "title": "Day 7: Full Body Fun",
+  "activityIds": ["activity-arm-circles", "activity-figure-8-arms", "activity-bunny-breaths"]
+}

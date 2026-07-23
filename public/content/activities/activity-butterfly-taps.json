@@ -1,0 +1,11 @@
+{
+  "id": "activity-butterfly-taps",
+  "type": "movement",
+  "title": "Butterfly Taps",
+  "ageBands": ["6-8"],
+  "renderer": "react",
+  "asset": "butterfly-taps",
+  "narration": "butterfly-taps.mp3",
+  "pacing": { "reps": 6, "tempoMs": 1200 },
+  "instructions": "Cross your arms and tap your opposite shoulders, like butterfly wings!"
+}

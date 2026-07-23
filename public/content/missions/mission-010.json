@@ -1,0 +1,7 @@
+{
+  "id": "mission-010",
+  "worldId": "world-jungle",
+  "node": 10,
+  "title": "Day 10: Grand Finale",
+  "activityIds": ["activity-star-jumps", "activity-figure-8-arms", "activity-puzzle-space"]
+}

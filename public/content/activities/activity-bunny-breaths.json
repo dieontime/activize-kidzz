@@ -1,0 +1,10 @@
+{
+  "id": "activity-bunny-breaths",
+  "type": "breathing",
+  "title": "Bunny Breaths",
+  "ageBands": ["6-8"],
+  "renderer": "react",
+  "asset": "bunny-breaths",
+  "narration": "bunny-breaths.mp3",
+  "cycles": 4
+}

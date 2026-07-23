@@ -1,0 +1,7 @@
+{
+  "id": "mission-006",
+  "worldId": "world-jungle",
+  "node": 6,
+  "title": "Day 6: Twist and Turn",
+  "activityIds": ["activity-butterfly-taps", "activity-superhero-punches", "activity-ocean-breaths"]
+}

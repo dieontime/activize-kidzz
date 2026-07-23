@@ -1,0 +1,11 @@
+{
+  "id": "activity-star-jumps",
+  "type": "movement",
+  "title": "Star Jumps",
+  "ageBands": ["6-8"],
+  "renderer": "react",
+  "asset": "star-jumps",
+  "narration": "star-jumps.mp3",
+  "pacing": { "reps": 8, "tempoMs": 1000 },
+  "instructions": "Jump with your arms and legs out like a star, then back together!"
+}

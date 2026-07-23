@@ -1,0 +1,11 @@
+{
+  "id": "activity-marching",
+  "type": "movement",
+  "title": "Marching in Place",
+  "ageBands": ["6-8"],
+  "renderer": "react",
+  "asset": "marching",
+  "narration": "marching.mp3",
+  "pacing": { "reps": 8, "tempoMs": 1000 },
+  "instructions": "March in place, lifting your knees high and swinging your opposite arm!"
+}

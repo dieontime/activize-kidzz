@@ -1,0 +1,7 @@
+{
+  "id": "mission-005",
+  "worldId": "world-jungle",
+  "node": 5,
+  "title": "Day 5: Pattern Play",
+  "activityIds": ["activity-marching", "activity-puzzle-fruits"]
+}

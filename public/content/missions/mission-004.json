@@ -1,0 +1,7 @@
+{
+  "id": "mission-004",
+  "worldId": "world-jungle",
+  "node": 4,
+  "title": "Day 4: Deep Breaths, Big Stretches",
+  "activityIds": ["activity-windmill-reach", "activity-balloon-breathing"]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "activity-arm-circles",
+  "type": "movement",
+  "title": "Arm Circles",
+  "ageBands": ["6-8"],
+  "renderer": "react",
+  "asset": "arm-circles",
+  "narration": "arm-circles.mp3",
+  "pacing": { "reps": 8, "tempoMs": 1000 },
+  "instructions": "Make big circles in the air with both of your arms!"
+}

@@ -1,0 +1,8 @@
+{
+  "id": "activity-puzzle-critters",
+  "type": "puzzle",
+  "title": "Critter Recall",
+  "ageBands": ["6-8"],
+  "narration": "puzzle-critters.mp3",
+  "puzzle": { "puzzleType": "sequence_memory", "icons": ["🐱", "🐶", "🐰"], "sequence": ["🐱", "🐶"] }
+}

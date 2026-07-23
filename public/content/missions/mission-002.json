@@ -1,0 +1,7 @@
+{
+  "id": "mission-002",
+  "worldId": "world-jungle",
+  "node": 2,
+  "title": "Day 2: Bounce and Balance",
+  "activityIds": ["activity-star-jumps", "activity-heel-to-toe"]
+}
