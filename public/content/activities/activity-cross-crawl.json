@@ -5,7 +5,7 @@
   "ageBands": ["6-8"],
   "renderer": "react",
   "asset": "cross-crawl",
-  "narration": "cross-crawl.mp3",
+  "narration": "Let's do Cross Crawl! Touch your right hand to your left knee, then switch.",
   "pacing": { "reps": 6, "tempoMs": 1200 },
   "instructions": "Touch your right hand to your left knee, then switch!"
 }

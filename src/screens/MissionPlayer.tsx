@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { PageShell } from "@/components/PageShell";
 import { ExercisePlayer } from "@/components/ExercisePlayer";
 import { PuzzlePlayer } from "@/components/PuzzlePlayer";
+import { NarrationButton } from "@/components/NarrationButton";
 import { useUiStore } from "@/store/uiStore";
 import { recordMissionCompletion } from "@/lib/progress";
 import { evaluateAndAwardBadges } from "@/lib/badges";
@@ -52,6 +53,9 @@ export function MissionPlayer({ mission, activities, badges, worldId, totalMissi
           Activity {index + 1} of {activities.length}
         </p>
         <h2 className="text-2xl font-bold mb-2">{activity.title}</h2>
+        <div className="mb-4">
+          <NarrationButton text={activity.narration} />
+        </div>
         {activity.type === "movement" || activity.type === "breathing" ? (
           <ExercisePlayer key={activity.id} activity={activity} onValidated={onDone} />
         ) : (

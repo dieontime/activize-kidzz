@@ -5,7 +5,7 @@
   "ageBands": ["6-8"],
   "renderer": "react",
   "asset": "figure-8-arms",
-  "narration": "figure-8-arms.mp3",
+  "narration": "Let's do Figure-8 Arms! Draw a big figure-8 in the air with both hands together.",
   "pacing": { "reps": 6, "tempoMs": 1300 },
   "instructions": "Draw a big figure-8 in the air with both hands together!"
 }

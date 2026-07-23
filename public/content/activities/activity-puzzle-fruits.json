@@ -3,6 +3,6 @@
   "type": "puzzle",
   "title": "Fruit Stand Memory",
   "ageBands": ["6-8"],
-  "narration": "puzzle-fruits.mp3",
+  "narration": "Let's play Fruit Stand Memory! Watch the fruits, then repeat the pattern.",
   "puzzle": { "puzzleType": "sequence_memory", "icons": ["🍎", "🍌", "🍇", "🍊"], "sequence": ["🍎", "🍌", "🍇"] }
 }

@@ -5,6 +5,6 @@
   "ageBands": ["6-8"],
   "renderer": "react",
   "asset": "belly-breaths",
-  "narration": "belly-breaths.mp3",
+  "narration": "Let's do Belly Breaths! Put your hands on your belly, breathe in deep, then breathe out slowly.",
   "cycles": 4
 }

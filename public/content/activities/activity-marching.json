@@ -5,7 +5,7 @@
   "ageBands": ["6-8"],
   "renderer": "react",
   "asset": "marching",
-  "narration": "marching.mp3",
+  "narration": "Let's do Marching in Place! Lift your knees high and swing your opposite arm.",
   "pacing": { "reps": 8, "tempoMs": 1000 },
   "instructions": "March in place, lifting your knees high and swinging your opposite arm!"
 }

@@ -5,7 +5,7 @@
   "ageBands": ["6-8"],
   "renderer": "react",
   "asset": "toe-touches",
-  "narration": "toe-touches.mp3",
+  "narration": "Let's do Toe Touches! Reach your opposite hand down to touch your toes, then switch sides.",
   "pacing": { "reps": 6, "tempoMs": 1200 },
   "instructions": "Reach your opposite hand down to touch your toes, then switch sides!"
 }

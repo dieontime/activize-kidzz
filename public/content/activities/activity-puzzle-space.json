@@ -3,6 +3,6 @@
   "type": "puzzle",
   "title": "Space Voyage Memory",
   "ageBands": ["6-8"],
-  "narration": "puzzle-space.mp3",
+  "narration": "Let's play Space Voyage Memory! Watch the pattern, then repeat it.",
   "puzzle": { "puzzleType": "sequence_memory", "icons": ["🚀", "🪐", "⭐", "🌙", "☄️"], "sequence": ["🚀", "🪐", "⭐", "🌙"] }
 }

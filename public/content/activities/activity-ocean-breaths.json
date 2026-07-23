@@ -5,6 +5,6 @@
   "ageBands": ["6-8"],
   "renderer": "react",
   "asset": "ocean-breaths",
-  "narration": "ocean-breaths.mp3",
+  "narration": "Let's do Ocean Breaths! Breathe in slowly, then breathe out like ocean waves.",
   "cycles": 4
 }

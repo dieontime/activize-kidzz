@@ -5,6 +5,6 @@
   "ageBands": ["6-8"],
   "renderer": "react",
   "asset": "balloon-breathing",
-  "narration": "balloon-breathing.mp3",
+  "narration": "Let's do Balloon Breathing! Breathe in slowly like you're filling up a balloon, then breathe out.",
   "cycles": 4
 }

@@ -5,7 +5,7 @@
   "ageBands": ["6-8"],
   "renderer": "react",
   "asset": "star-jumps",
-  "narration": "star-jumps.mp3",
+  "narration": "Let's do Star Jumps! Jump with your arms and legs out like a star, then back together.",
   "pacing": { "reps": 8, "tempoMs": 1000 },
   "instructions": "Jump with your arms and legs out like a star, then back together!"
 }

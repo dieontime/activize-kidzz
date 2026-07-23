@@ -3,6 +3,6 @@
   "type": "puzzle",
   "title": "Weather Watch",
   "ageBands": ["6-8"],
-  "narration": "puzzle-weather.mp3",
+  "narration": "Let's play Weather Watch! Watch the pattern, then repeat it.",
   "puzzle": { "puzzleType": "sequence_memory", "icons": ["☀️", "🌧️", "❄️", "⛈️", "🌈"], "sequence": ["☀️", "🌧️", "❄️", "⛈️"] }
 }

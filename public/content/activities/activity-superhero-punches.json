@@ -5,7 +5,7 @@
   "ageBands": ["6-8"],
   "renderer": "react",
   "asset": "superhero-punches",
-  "narration": "superhero-punches.mp3",
+  "narration": "Let's do Superhero Punches! Punch one arm across your body, then switch sides, like a superhero.",
   "pacing": { "reps": 8, "tempoMs": 1000 },
   "instructions": "Punch one arm across your body, then switch to the other side, like a superhero!"
 }

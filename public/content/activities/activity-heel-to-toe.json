@@ -5,7 +5,7 @@
   "ageBands": ["6-8"],
   "renderer": "react",
   "asset": "heel-to-toe",
-  "narration": "heel-to-toe.mp3",
+  "narration": "Let's do Heel to Toe! Walk in a line, touching your heel to your toes with each step.",
   "pacing": { "reps": 6, "tempoMs": 1300 },
   "instructions": "Walk in a line, touching your heel to your toes with each step!"
 }

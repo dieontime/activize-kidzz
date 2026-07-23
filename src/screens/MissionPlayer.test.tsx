@@ -33,6 +33,15 @@ describe("MissionPlayer", () => {
     expect(screen.getByText(/activity 1 of 2/i)).toBeInTheDocument();
   });
 
+  it("renders a narration button that speaks the activity's narration text when pressed", async () => {
+    const user = userEvent.setup();
+    render(<MissionPlayer mission={mission} activities={activities} badges={[]} worldId="world-jungle" totalMissionsInWorld={1} />);
+    await user.click(screen.getByRole("button", { name: /read it/i }));
+    expect(window.speechSynthesis.speak).toHaveBeenCalledWith(
+      expect.objectContaining({ text: activities[0].narration }),
+    );
+  });
+
   it("advances through activities when the parent presses We did it!", async () => {
     const user = userEvent.setup();
     render(<MissionPlayer mission={mission} activities={activities} badges={[]} worldId="world-jungle" totalMissionsInWorld={1} />);

@@ -3,6 +3,6 @@
   "type": "puzzle",
   "title": "Critter Recall",
   "ageBands": ["6-8"],
-  "narration": "puzzle-critters.mp3",
+  "narration": "Let's play Critter Recall! Watch the animals, then repeat the pattern.",
   "puzzle": { "puzzleType": "sequence_memory", "icons": ["🐱", "🐶", "🐰"], "sequence": ["🐱", "🐶"] }
 }

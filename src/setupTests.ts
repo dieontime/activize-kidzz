@@ -17,3 +17,17 @@ vi.stubEnv("VITE_SUPABASE_ANON_KEY", "");
 vi.mock("@rive-app/react-canvas", () => ({
   useRive: vi.fn(() => ({ RiveComponent: () => null })),
 }));
+
+// Web Speech API (speechSynthesis) doesn't exist under jsdom. This global
+// default mirrors the @rive-app/react-canvas mock above: every test that
+// renders NarrationButton/MissionPlayer sees this safe no-op unless it
+// deliberately overrides window.speechSynthesis itself (see
+// NarrationButton.test.tsx's "unavailable" case).
+Object.defineProperty(window, "speechSynthesis", {
+  writable: true,
+  configurable: true,
+  value: { speak: vi.fn(), cancel: vi.fn() } as unknown as SpeechSynthesis,
+});
+window.SpeechSynthesisUtterance = vi
+  .fn()
+  .mockImplementation((text: string) => ({ text })) as unknown as typeof SpeechSynthesisUtterance;

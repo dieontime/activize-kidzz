@@ -5,7 +5,7 @@
   "ageBands": ["6-8"],
   "renderer": "react",
   "asset": "windmill-reach",
-  "narration": "windmill-reach.mp3",
+  "narration": "Let's do Windmill Reach! Stand tall with feet apart, and swing one hand down to touch the opposite foot.",
   "pacing": { "reps": 6, "tempoMs": 1400 },
   "instructions": "Stand tall with feet apart, and swing one hand down to touch the opposite foot!"
 }
