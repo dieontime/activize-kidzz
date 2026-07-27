@@ -23,7 +23,7 @@ export function TrophyShelf({ badges }: Props) {
               <div
                 aria-label={earned ? badge.name : `${badge.name}, locked`}
                 className={`w-full rounded-2xl p-4 text-center font-bold ${
-                  earned ? "bg-storybook-mint text-storybook-mintText" : "bg-storybook-tan text-storybook-ink opacity-60"
+                  earned ? "bg-storybook-mint text-storybook-mintText storybook-badge-in" : "bg-storybook-tan text-storybook-ink opacity-60"
                 }`}
               >
                 <div className="text-4xl mb-2">{earned ? badge.emoji : "🔒"}</div>

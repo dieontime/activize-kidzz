@@ -13,8 +13,12 @@ interface Props {
   disabled?: boolean;
 }
 
+// rgba below must match storybook-gold's hex (#FFC93C = rgb(255,201,60)) --
+// Tailwind v4 arbitrary box-shadow values can't reference a theme color with
+// opacity in one utility, so this has to be kept in sync by hand if the gold
+// token ever changes again.
 const FOCUS_RING =
-  "data-[focused=true]:outline data-[focused=true]:outline-4 data-[focused=true]:outline-dashed data-[focused=true]:outline-storybook-gold data-[focused=true]:outline-offset-2 data-[focused=true]:shadow-[0_0_16px_2px_rgba(224,164,88,0.5)]";
+  "data-[focused=true]:outline data-[focused=true]:outline-4 data-[focused=true]:outline-dashed data-[focused=true]:outline-storybook-gold data-[focused=true]:outline-offset-2 data-[focused=true]:shadow-[0_0_16px_2px_rgba(255,201,60,0.5)]";
 
 const VARIANT_CLASSES: Record<Variant, string> = {
   pill: `rounded-full px-6 py-3 font-bold data-[focused=true]:scale-110 ${FOCUS_RING}`,

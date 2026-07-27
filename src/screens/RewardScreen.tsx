@@ -21,10 +21,10 @@ export function RewardScreen({ missionTitle, badges }: Props) {
         <h1 className="text-3xl font-bold mb-4">You did it!</h1>
         <p className="text-lg mb-4">{missionTitle} complete — you earned a star!</p>
         {streakCount >= 2 && (
-          <p className="text-lg font-bold text-storybook-gold mb-4">{streakCount}-day streak!</p>
+          <p className="text-lg font-bold text-storybook-gold mb-4 storybook-badge-in">{streakCount}-day streak!</p>
         )}
         {newlyEarnedBadges.map((badge) => (
-          <p key={badge.id} className="text-lg font-bold text-storybook-gold mb-4">
+          <p key={badge.id} className="text-lg font-bold text-storybook-gold mb-4 storybook-badge-in">
             {badge.emoji} {badge.name}!
           </p>
         ))}

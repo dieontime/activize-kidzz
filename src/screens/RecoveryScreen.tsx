@@ -35,13 +35,13 @@ export function RecoveryScreen() {
       <PageShell>
         <h1 className="text-3xl font-bold mb-6">Forgot your PIN?</h1>
         <input
-          className="rounded-full px-5 py-3 mb-4 border-2 border-storybook-lavender bg-white text-storybook-ink block"
+          className="rounded-full px-5 py-3 mb-4 border-2 border-storybook-lavender bg-storybook-paper text-storybook-paperText block"
           placeholder="Your silly name"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
         <input
-          className="rounded-full px-5 py-3 mb-4 border-2 border-storybook-lavender bg-white text-storybook-ink block"
+          className="rounded-full px-5 py-3 mb-4 border-2 border-storybook-lavender bg-storybook-paper text-storybook-paperText block"
           placeholder="Recovery code (PURPLE-FROG-1234)"
           value={code}
           onChange={(e) => setCode(e.target.value.toUpperCase())}

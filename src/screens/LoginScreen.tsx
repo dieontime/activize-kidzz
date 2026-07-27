@@ -28,7 +28,7 @@ export function LoginScreen() {
     <PageShell>
       <h1 className="text-3xl font-bold mb-6">Welcome back!</h1>
       <input
-        className="rounded-full px-5 py-3 mb-4 border-2 border-storybook-lavender bg-white text-storybook-ink"
+        className="rounded-full px-5 py-3 mb-4 border-2 border-storybook-lavender bg-storybook-paper text-storybook-paperText"
         placeholder="Your silly name"
         value={username}
         onChange={(e) => setUsername(e.target.value)}

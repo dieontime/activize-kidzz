@@ -3,15 +3,35 @@
 @import "@fontsource/quicksand/700.css";
 
 @theme {
-  --color-storybook-cream: #FDF6EC;
-  --color-storybook-ink: #5B4636;
-  --color-storybook-mint: #BFE3D0;
-  --color-storybook-mintText: #33513F;
-  --color-storybook-peach: #F6CBB7;
-  --color-storybook-peachText: #5B3A2A;
-  --color-storybook-lavender: #D9CFEF;
-  --color-storybook-lavenderText: #40365B;
-  --color-storybook-gold: #E0A458;
-  --color-storybook-tan: #EADFC8;
+  --color-storybook-cream: #2E7D5B;
+  --color-storybook-ink: #FDF6EC;
+  --color-storybook-mint: #FFC93C;
+  --color-storybook-mintText: #1B4D3E;
+  --color-storybook-peach: #FF6B4B;
+  --color-storybook-peachText: #FDF6EC;
+  --color-storybook-lavender: #2BA8BD;
+  --color-storybook-lavenderText: #FDF6EC;
+  --color-storybook-gold: #FFC93C;
+  --color-storybook-tan: #8BBFA5;
+  --color-storybook-paper: #FBF6EA;
+  --color-storybook-paperText: #3A2A1E;
   --font-sans: "Quicksand", ui-sans-serif, system-ui, sans-serif;
+}
+
+@keyframes storybook-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+
+@keyframes storybook-badge-in {
+  0% { opacity: 0; transform: scale(0.85); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+.storybook-pulse {
+  animation: storybook-pulse 2s ease-in-out infinite;
+}
+
+.storybook-badge-in {
+  animation: storybook-badge-in 0.4s ease-out both;
 }
