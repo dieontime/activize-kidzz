@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { createContentLoader } from "./loader";
 import { useProgressStore } from "@/store/progressStore";
+import { useAuthStore } from "@/store/authStore";
 import type { World, Mission, Activity, Badge } from "./types";
 
 const baseUrl = import.meta.env.VITE_CONTENT_URL ?? "/content";
@@ -35,9 +36,11 @@ export function useContent(): ContentState {
         const worldId = manifest.worldIds[worldIndex] ?? manifest.worldIds[0];
         const world = await loader.loadWorld(worldId);
         const missions = await Promise.all(world.missionIds.map((id) => loader.loadMission(id)));
+        const ageBand = useAuthStore.getState().activeProfile?.age_band;
         const activitiesByMission: Record<string, Activity[]> = {};
         for (const mission of missions) {
-          activitiesByMission[mission.id] = await Promise.all(mission.activityIds.map((id) => loader.loadActivity(id)));
+          const activities = await Promise.all(mission.activityIds.map((id) => loader.loadActivity(id)));
+          activitiesByMission[mission.id] = ageBand ? activities.filter((a) => a.ageBands.includes(ageBand)) : activities;
         }
         const badges = await Promise.all(manifest.badgeIds.map((id) => loader.loadBadge(id)));
         if (!cancelled) setState({ status: "ready", world, missions, activitiesByMission, badges });

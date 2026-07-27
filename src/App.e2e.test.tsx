@@ -90,6 +90,33 @@ describe("App end-to-end", () => {
     await waitFor(() => expect(screen.getByText(/jungle jump/i)).toBeInTheDocument());
   });
 
+  it("filters a mission's activities by the profile's age band", async () => {
+    const mixedMission = { ...mission, activityIds: ["activity-cross-crawl", "activity-toddler-only"] };
+    const toddlerActivity = {
+      id: "activity-toddler-only", type: "movement", title: "Toddler Wiggle", ageBands: ["3-5"],
+      renderer: "react", asset: "toddler-wiggle", narration: "Wiggle!", pacing: { reps: 1, tempoMs: 1 },
+      instructions: "Wiggle your arms!",
+    };
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async (url: string) => {
+        if (url === "/content/missions/mission-001.json") return { ok: true, json: async () => mixedMission };
+        if (url === "/content/activities/activity-toddler-only.json") return { ok: true, json: async () => toddlerActivity };
+        return { ok: true, json: async () => byPath[url] };
+      }),
+    );
+
+    const user = userEvent.setup();
+    render(<App />);
+
+    await waitFor(() => expect(screen.getByText(/jungle jump/i)).toBeInTheDocument());
+    await user.click(screen.getByRole("button", { name: /wake up your brain/i }));
+
+    expect(screen.getByText(/activity 1 of 1/i)).toBeInTheDocument();
+    expect(screen.getByText(/cross crawl/i)).toBeInTheDocument();
+    expect(screen.queryByText(/toddler wiggle/i)).not.toBeInTheDocument();
+  });
+
   it("persists progress across a reload: the advanced node survives an in-memory reset", async () => {
     const user = userEvent.setup();
     const { unmount } = render(<App />);

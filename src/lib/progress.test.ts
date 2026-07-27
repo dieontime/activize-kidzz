@@ -11,6 +11,7 @@ describe("lib/progress", () => {
     mockProgressBackend.reset();
     useProgressStore.getState().reset();
     useAuthStore.setState({ activeProfile: PROFILE });
+    localStorage.clear();
   });
 
   afterEach(() => {
@@ -118,6 +119,49 @@ describe("lib/progress", () => {
       await loadProgress(PROFILE.id);
       await recordMissionCompletion("mission-001", 1, 4);
       expect(useProgressStore.getState().totalMissionsCompleted).toBe(1);
+    });
+
+    it("queues a failed write instead of losing it", async () => {
+      await loadProgress(PROFILE.id);
+      const saveSpy = vi.spyOn(progressBackend, "saveProgress").mockRejectedValueOnce(new Error("network down"));
+
+      await recordMissionCompletion("mission-001", 1, 4);
+
+      const queued = JSON.parse(localStorage.getItem(`activize:pendingProgress:${PROFILE.id}`) ?? "[]");
+      expect(queued).toHaveLength(1);
+      expect(queued[0]).toMatchObject({ missionId: "mission-001", activitiesDone: 4 });
+      expect(queued[0].updated.node).toBe(2);
+
+      saveSpy.mockRestore();
+    });
+
+    it("replays a queued write successfully on the next loadProgress call", async () => {
+      await loadProgress(PROFILE.id);
+      const saveSpy = vi.spyOn(progressBackend, "saveProgress").mockRejectedValueOnce(new Error("network down"));
+      await recordMissionCompletion("mission-001", 1, 4);
+      saveSpy.mockRestore();
+
+      useProgressStore.getState().reset();
+      await loadProgress(PROFILE.id);
+
+      expect(useProgressStore.getState().node).toBe(2);
+      expect(localStorage.getItem(`activize:pendingProgress:${PROFILE.id}`)).toBe("[]");
+    });
+
+    it("leaves the queue intact if the retry also fails", async () => {
+      await loadProgress(PROFILE.id);
+      const saveSpy = vi.spyOn(progressBackend, "saveProgress").mockRejectedValueOnce(new Error("network down"));
+      await recordMissionCompletion("mission-001", 1, 4);
+
+      saveSpy.mockRejectedValueOnce(new Error("still down"));
+      useProgressStore.getState().reset();
+      await loadProgress(PROFILE.id);
+
+      const queued = JSON.parse(localStorage.getItem(`activize:pendingProgress:${PROFILE.id}`) ?? "[]");
+      expect(queued).toHaveLength(1);
+      expect(queued[0]).toMatchObject({ missionId: "mission-001", activitiesDone: 4 });
+
+      saveSpy.mockRestore();
     });
   });
 });
