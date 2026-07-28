@@ -18,6 +18,16 @@ vi.mock("@rive-app/react-canvas", () => ({
   useRive: vi.fn(() => ({ RiveComponent: () => null })),
 }));
 
+// lottie-react renders via canvas/SVG that jsdom doesn't fully support.
+// Mocking it globally means every test that transitively imports
+// rendererRegistry.ts (ExercisePlayer, MissionPlayer, App.e2e) only ever
+// sees this safe no-op default -- LottieRenderer.test.tsx customizes this
+// same mock instance per-test via vi.mocked(Lottie), it does not
+// register a second, competing vi.mock for the same module.
+vi.mock("lottie-react", () => ({
+  default: vi.fn(() => null),
+}));
+
 // Web Speech API (speechSynthesis) doesn't exist under jsdom. This global
 // default mirrors the @rive-app/react-canvas mock above: every test that
 // renders NarrationButton/MissionPlayer sees this safe no-op unless it

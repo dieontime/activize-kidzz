@@ -3,7 +3,7 @@
   "type": "breathing",
   "title": "Balloon Breathing",
   "ageBands": ["6-8"],
-  "renderer": "react",
+  "renderer": "lottie",
   "asset": "balloon-breathing",
   "narration": "Let's do Balloon Breathing! Breathe in slowly like you're filling up a balloon, then breathe out.",
   "cycles": 4
