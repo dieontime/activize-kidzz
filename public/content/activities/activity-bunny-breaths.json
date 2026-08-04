@@ -3,7 +3,7 @@
   "type": "breathing",
   "title": "Bunny Breaths",
   "ageBands": ["6-8"],
-  "renderer": "react",
+  "renderer": "lottie",
   "asset": "bunny-breaths",
   "narration": "Let's do Bunny Breaths! Take three quick sniffs like a bunny, then breathe out slowly.",
   "cycles": 4

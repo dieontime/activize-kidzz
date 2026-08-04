@@ -3,7 +3,7 @@
   "type": "breathing",
   "title": "Ocean Breaths",
   "ageBands": ["6-8"],
-  "renderer": "react",
+  "renderer": "lottie",
   "asset": "ocean-breaths",
   "narration": "Let's do Ocean Breaths! Breathe in slowly, then breathe out like ocean waves.",
   "cycles": 4

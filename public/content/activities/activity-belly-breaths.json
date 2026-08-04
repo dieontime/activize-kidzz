@@ -3,7 +3,7 @@
   "type": "breathing",
   "title": "Belly Breaths",
   "ageBands": ["6-8"],
-  "renderer": "react",
+  "renderer": "lottie",
   "asset": "belly-breaths",
   "narration": "Let's do Belly Breaths! Put your hands on your belly, breathe in deep, then breathe out slowly.",
   "cycles": 4
